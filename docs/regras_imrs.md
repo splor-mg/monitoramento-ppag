@@ -113,8 +113,9 @@ estrutura:
 | programado | decimal | Valor programado apropriado ao recorte do IMRS |
 | realizado | decimal | Valor realizado apropriado ao recorte do IMRS |
 
-O código do programa deve ser mantido como texto para preservar eventuais
-zeros à esquerda.
+O código do programa tem de um a três dígitos. Antes de agrupar e cruzar as
+bases, remova os zeros de preenchimento do SIGPlan. Mantenha o código como
+texto e ordene pelo seu valor numérico na tabela final.
 
 ### 9.2. Cálculo do valor programado
 
@@ -214,9 +215,9 @@ Exemplo estrutural:
 
 | codigo_programa | programa | programado | realizado |
 |---|---|---:|---:|
-| 0001 | Programa A | 1000000.00 | 250000.00 |
-| 0002 | Programa B | 0.00 | 50000.00 |
-| 0003 | Programa C | 800000.00 | 0.00 |
+| 1 | Programa A | 1000000.00 | 250000.00 |
+| 2 | Programa B | 0.00 | 50000.00 |
+| 3 | Programa C | 800000.00 | 0.00 |
 
 ---
 
@@ -676,8 +677,11 @@ A igualdade deve ser verificada separadamente para:
 Atualmente é um filtro não utilizado pois não são demonstrativos presentes no RIM Social, mas é uma base válida de ser considerada.
 
 ### Exclusão lógica
-Os campos de exclusão lógica existentes na base de planejamento não são
-utilizados.
+Antes de calcular o programado das Tabelas 9, 10 e 11, excluir da base de
+planejamento todos os registros de localizadores com `Exclusão Lógica da Ação = True`.
+Aplicar o filtro antes da apropriação territorial e das agregações financeiras.
+O filtro se aplica ao campo da ação na base de planejamento. O realizado é
+calculado a partir da base de monitoramento do bimestre.
 
 ### Execução sem programação
 Programas com execução e sem valor inicialmente programado devem permanecer Essa ocorrência não deve ser tratada como erro.

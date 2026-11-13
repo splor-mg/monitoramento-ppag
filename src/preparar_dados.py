@@ -1,6 +1,8 @@
-"""Leitura e preparação das bases utilizadas no monitoramento do PPAG."""
+"""Leitura de arquivos do PPAG e gravação de cópias em Parquet."""
 
+from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pandas as pd
 
@@ -10,7 +12,7 @@ PASTA_PROCESSED = Path("data/processed")
 
 
 def carregar_excel(caminho, **kwargs):
-    """Carrega uma base Excel."""
+    """Lê o Excel com as opções de aba, cabeçalho e tipos do chamador."""
     return pd.read_excel(caminho, **kwargs)
 
 
@@ -23,6 +25,7 @@ def padronizar_colunas(df):
     """Padroniza nomes de colunas para uso nas rotinas do projeto."""
     df = df.copy()
 
+    # Remove espaços nas pontas e converte nomes como Código IBGE em código_ibge.
     df.columns = (
         df.columns
         .str.strip()
@@ -33,12 +36,12 @@ def padronizar_colunas(df):
     return df
 
 
-def carregar_txt(caminho):
+def carregar_txt(caminho, **kwargs):
     """
     Carrega arquivos TXT delimitados por |.
 
-    Tenta primeiro UTF-8 e, caso não seja compatível,
-    utiliza Windows-1252.
+    Tenta primeiro UTF-8 e, se a decodificação falhar, usa Windows-1252.
+    O chamador pode pedir só as colunas que usa e manter códigos como texto.
     """
     try:
         return pd.read_csv(
@@ -46,6 +49,7 @@ def carregar_txt(caminho):
             sep="|",
             encoding="utf-8",
             low_memory=False,
+            **kwargs,
         )
     except UnicodeDecodeError:
         return pd.read_csv(
@@ -53,7 +57,29 @@ def carregar_txt(caminho):
             sep="|",
             encoding="windows-1252",
             low_memory=False,
+            **kwargs,
         )
+
+
+def gravar_parquet(df, caminho, *, index=False):
+    """Grava as colunas com seus tipos e usa compressão Zstandard."""
+    df.to_parquet(caminho, index=index, engine="pyarrow", compression="zstd")
+
+
+def salvar_bases_processadas(bases, pasta):
+    """Guarda os DataFrames do IMRS juntos em uma pasta por execução."""
+    pasta.mkdir(parents=True, exist_ok=True)
+    destino = pasta / datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
+
+    # Escreve todos os Parquets antes de disponibilizar a pasta. Cada rodada
+    # ganha uma cópia própria e mantém os índices originais quando existirem.
+    with TemporaryDirectory(dir=pasta) as temporario:
+        registros = Path(temporario) / "registros"
+        registros.mkdir()
+        for nome, df in bases.items():
+            gravar_parquet(df, registros / f"{nome}.parquet", index=None)
+        registros.rename(destino)
+    return destino
 
 
 def converter_para_parquet(caminho_origem):
@@ -61,6 +87,7 @@ def converter_para_parquet(caminho_origem):
 
     caminho_origem = Path(caminho_origem)
 
+    # Replica a posição do arquivo em data/raw, trocando a extensão por .parquet.
     caminho_relativo = caminho_origem.relative_to(PASTA_RAW)
 
     caminho_destino = (
@@ -85,12 +112,7 @@ def converter_para_parquet(caminho_origem):
         print(f"Ignorado: {caminho_origem}")
         return
 
-    df.to_parquet(
-        caminho_destino,
-        index=False,
-        engine="pyarrow",
-        compression="zstd",
-    )
+    gravar_parquet(df, caminho_destino)
 
     print(
         f"Convertido: {caminho_origem} "
@@ -99,7 +121,7 @@ def converter_para_parquet(caminho_origem):
 
 
 def converter_bases_raw():
-    """Converte todas as bases de data/raw para data/processed."""
+    """Converte os arquivos brutos de forma independente do cálculo do IMRS."""
 
     extensoes = {
         ".txt",
