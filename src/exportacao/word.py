@@ -7,7 +7,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt, RGBColor
 
-from src.relatorio_imrs import AZUL, AZUL_CLARO, ELABORACAO, FONTE, NOTA_PODERES, numero_br, percentual
+from src.exportacao.estilo import AZUL, AZUL_CLARO, ELABORACAO, FONTE, NOTA_PODERES, numero_br, percentual
 
 
 def _tabela(doc, cabecalho, larguras, linhas, numericas, percentuais):

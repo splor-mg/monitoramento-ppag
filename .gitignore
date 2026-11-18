@@ -224,3 +224,9 @@ __marimo__/
 
 # Cópias locais das etapas de cálculo do IMRS
 /data/processed/imrs/
+
+# Resultados e memórias reproduzíveis das demais seções do RIM
+/data/processed/desempenho/
+/data/processed/global/
+/data/processed/regionalizacao/
+/outputs/

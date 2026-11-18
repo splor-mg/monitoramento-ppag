@@ -5,15 +5,15 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from src.config import PASTA_DADOS, PASTA_SAIDAS
-from src.exportar_word import exportar_word
-from src.imrs import exportar_tabelas_imrs, gerar_tabelas_imrs
-from src.preparar_dados import salvar_bases_processadas
-from src.preparar_imrs import carregar_bases_imrs
-from src.relatorio_imrs import analisar, montar_quadros
+from src.exportacao.word import exportar_word
+from src.imrs.gerar import exportar_tabelas_imrs, gerar_tabelas_imrs, montar_quadros
+from src.imrs.preparar_imrs import carregar_bases_imrs
+from src.imrs.texto import analisar
+from src.preparar import salvar_bases_processadas
 
 
-def main(ano, bimestre, ano_imrs=2024, ano_populacao=2025, saida=None):
-    """Gera o Excel do período e registra os DataFrames utilizados no cálculo."""
+def main(ano, bimestre, ano_imrs=2024, ano_populacao=2025, saida=None, *, mapas=False):
+    """Gera os produtos do IMRS e registra os DataFrames utilizados no cálculo."""
     # Recarrega as quatro bases brutas e prepara os valores de cada localizador
     # em memória. Reúne os DataFrames efetivamente usados nesta rodada.
     bases = carregar_bases_imrs(ano, bimestre, ano_imrs, ano_populacao)
@@ -29,14 +29,22 @@ def main(ano, bimestre, ano_imrs=2024, ano_populacao=2025, saida=None):
         raise ValueError("A saída do Excel deve ter extensão .xlsx.")
     word = caminho.with_suffix(".docx")
     caminho.parent.mkdir(parents=True, exist_ok=True)
-    # Publica o arquivo de saída depois que todas as abas forem gravadas.
+    # Prepara os arquivos solicitados antes de gravá-los no destino final.
     with TemporaryDirectory(dir=caminho.parent) as pasta_temporaria:
         temporario = Path(pasta_temporaria) / caminho.name
         word_temporario = Path(pasta_temporaria) / word.name
         exportar_tabelas_imrs({**tabelas, "Memória Tabela 11": memoria}, temporario, quadros=quadros)
         exportar_word(quadros, texto, ano, bimestre, word_temporario)
+        arquivos_mapa = []
+        if mapas:
+            from src.imrs.mapas import gerar_mapas_tabela
+
+            # Reaproveita o resultado municipal, sem reler o Excel recém-gravado.
+            arquivos_mapa = gerar_mapas_tabela(tabelas["Tabela 11"], ano, bimestre, Path(pasta_temporaria))
         temporario.replace(caminho)
         word_temporario.replace(word)
+        for arquivo in arquivos_mapa:
+            arquivo.replace(caminho.parent / arquivo.name)
 
     # Registra as etapas da mesma execução, identificadas pelas referências
     # usadas no relatório. As tabelas já foram calculadas em memória.
@@ -45,11 +53,13 @@ def main(ano, bimestre, ano_imrs=2024, ano_populacao=2025, saida=None):
     print(f"IMRS {ano_imrs} e população {ano_populacao} | RIM {ano}, {bimestre}º bimestre")
     print(f"Arquivo gerado: {caminho}")
     print(f"Relatório Word: {word}")
+    for arquivo in arquivos_mapa:
+        print(f"Mapa gerado: {caminho.parent / arquivo.name}")
     print(f"DataFrames registrados: {registros}")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Gera as tabelas 9, 10 e 11 do IMRS para o RIM.")
+    parser = argparse.ArgumentParser(description="Gera as tabelas e, opcionalmente, os mapas do IMRS para o RIM.")
     parser.add_argument("--ano", type=int, required=True, help="Ano de referência do PPAG.")
     parser.add_argument(
         "--bimestre", type=int, choices=range(1, 7), required=True,
@@ -62,6 +72,7 @@ if __name__ == "__main__":
         "--ano-populacao", type=int, default=2025, help="Ano da estimativa do IBGE (padrão 2025).",
     )
     parser.add_argument("--saida", type=Path, help="Caminho do arquivo Excel a gerar.")
+    parser.add_argument("--mapas", action="store_true", help="Inclui os Mapas 6 e 7 na mesma execução.")
     args = parser.parse_args()
     try:
         main(**vars(args))

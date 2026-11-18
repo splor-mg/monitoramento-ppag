@@ -3,6 +3,9 @@
 ## 1. Parâmetros de execução
 As rotinas devem receber o exercício e o bimestre como parâmetros.
 O ano e o bimestre não devem ser fixados nas funções de processamento.
+Na execução acumulada, usar janeiro até o último mês do bimestre.
+Identificar em cada demonstrativo se a comparação usa a programação anual ou
+a programação acumulada do período.
 
 ## 2. Identificadores
 Sempre que houver identificador numérico ou código institucional disponível, ele deve ser utilizado como chave de relacionamento entre bases.
@@ -28,3 +31,5 @@ As transformações devem ser reproduzíveis a partir das bases de entrada.
 ## 7. Validação
 Cada módulo deve possuir verificações de consistência compatíveis com sua metodologia.
 Resultados inconsistentes devem produzir erro ou alerta explícito.
+Calcular taxas de subtotais e totais a partir dos valores agregados. Quando
+o denominador for zero, apresentar a taxa como indisponível.

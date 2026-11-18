@@ -1,6 +1,21 @@
 # monitoramento-ppag
 Scripts e rotinas para tratamento, análise e geração de tabelas, gráficos e demonstrativos do monitoramento do PPAG de Minas Gerais.
 
+## Organização do código
+
+- `main.py` recebe o ano e o bimestre e coordena a geração do IMRS.
+- `src/preparar.py` reúne leitura, padronização, checagem de período e gravação em Parquet.
+- `src/preparar_mapas.py` lê a malha municipal de MG, reúne os municípios nas
+  13 regiões intermediárias e associa indicadores pelo código territorial.
+- `src/imrs/preparar_imrs.py` carrega as bases da seção e aplica o filtro de exclusão lógica ao
+  planejamento do IMRS, o recorte dos 50 municípios, os pesos populacionais e o rateio.
+- `src/imrs/` tem um arquivo por tabela e por mapa. `gerar.py` confere os totais e
+  prepara os quadros, `texto.py` faz a análise e `cartografia.py` compartilha o desenho dos mapas.
+- `src/exportacao/` reúne a formatação e a gravação do Excel e do Word.
+- `src/execucao_global/`, `src/desempenho/` e `src/regionalizacao/` têm um script
+  por componente e uma rotina de execução por seção.
+- `src/pessoal/` reserva espaço para a seção de Pessoal e Auxílios.
+
 ## Tabelas do IMRS
 
 Na raiz do repositório, instale as dependências e gere as tabelas 9, 10 e 11.
@@ -32,16 +47,78 @@ Essas cópias servem para conferência. O comando lê `data/raw` a cada rodada.
 
 Na primeira vez, baixe a [malha municipal de MG de 2025](https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/municipio_2025/UFs/MG/)
 do IBGE e guarde o ZIP em `data/auxiliares/MG_Municipios_2025.zip`.
-Depois de gerar o Excel do bimestre, rode:
+Para gerar Excel, Word e mapas em uma única execução:
 
 ```powershell
-poetry run python -m src.mapas_imrs --ano 2026 --bimestre 2
+poetry run python main.py --ano 2026 --bimestre 2 --mapas
 ```
 
-O script lê a aba `Tabela 11`, cruza os 50 municípios pelo código IBGE e
-grava os dois PNGs em `outputs/`. O Mapa 6 usa o programado anual e o Mapa 7
-usa o realizado acumulado do bimestre. Cada mapa tem sua escala em R$ milhões.
+Os mapas usam os resultados da Tabela 11 em memória, cruzados com a malha
+pelo código IBGE. O Mapa 6 usa o programado anual e o Mapa 7 usa o realizado
+acumulado. Os dois PNGs saem junto dos outros arquivos, em `outputs/` por padrão.
 
-Use `--malha` para indicar outra malha local com o campo `CD_MUN`, `--tabela`
-para escolher outro Excel com a aba `Tabela 11` ou `--saida` para gravar os PNGs
-em outra pasta.
+Para gerar só os mapas a partir de um Excel já pronto:
+
+```powershell
+poetry run python -m src.imrs.mapas --ano 2026 --bimestre 2
+```
+
+Nesse comando, `--malha` aceita outra malha local com o campo `CD_MUN`,
+`--tabela` indica outro Excel com a aba `Tabela 11` e `--saida` define a pasta
+dos PNGs.
+
+A preparação cartográfica aceita a relação entre código IBGE e região
+intermediária para formar os limites dos Mapas 1 a 5 a partir da mesma
+malha municipal. O desenho e os cálculos desses mapas estão em
+`src/regionalizacao/`.
+
+## Desempenho Consolidado
+
+Gerar Tabelas 5 e 6 e Gráficos 1 e 2 a partir dos TXT de ações e localizadores
+do bimestre em `data/raw/monitoramento/`.
+
+```powershell
+poetry run python -m src.desempenho.gerar --ano 2026 --bimestre 3
+```
+
+Cada componente possui um script comentado em `src/desempenho/`. A execução
+grava um Excel com as duas tabelas e dois PNGs em
+`outputs/Desempenho_<ano>_<bimestre>bim/`. O argumento `--saida` escolhe outra
+pasta. As ações classificadas, tabelas e dados dos gráficos ficam registrados
+em `data/processed/desempenho/<ano>/<bimestre>bim/<execução>/`.
+
+O desempenho físico usa a programação inicial acumulada até o bimestre.
+A validade orçamentária usa a previsão da LOA diferente de zero. A validade
+física acrescenta as ações não orçamentárias. Os filtros são aplicados nas
+contagens. Os gráficos recalculam percentuais excluindo Sem meta estabelecida.
+
+## Execução Global
+
+```powershell
+poetry run python -m src.execucao_global.gerar --ano 2026 --bimestre 3
+```
+
+Os scripts comentados de cada Tabela 1 a 4 ficam em `src/execucao_global/`.
+O Excel sai em `outputs/Global_<ano>_<bimestre>bim/`. A rotina confere os
+totais anual, programado até o bimestre e realizado das quatro tabelas com
+a base de ações. O argumento `--saida` escolhe outra pasta.
+
+## Regionalização
+
+```powershell
+poetry run python -m src.regionalizacao.gerar --ano 2026 --bimestre 3
+```
+
+Gera as Tabelas 7 e 8 em Excel e um PNG por Mapa 1 a 5. Cada componente
+possui um script comentado em `src/regionalizacao/`. As saídas ficam em
+`outputs/Regionalizacao_<ano>_<bimestre>bim/`. Os argumentos `--saida`,
+`--ano-populacao` e `--malha` permitem escolher a pasta, a edição da população
+e a malha municipal, com os mesmos padrões usados no IMRS.
+
+O programado desconsidera os registros marcados com exclusão lógica de ação.
+O per capita estadual divide o executado total pela população de MG.
+As conferências com as ações sinalizam divergências de origem, como a
+diferença de R$ 10.714,63 do realizado de fevereiro de 2026.
+
+As duas rotinas registram os DataFrames em `data/processed/global/` e
+`data/processed/regionalizacao/`, identificados por ano, bimestre e execução.

@@ -13,7 +13,7 @@ def _calcular_parcelas(base, municipios, prefixo):
     """Calcula as três parcelas da MUN_juncao_plan_exec para uma das bases."""
     # valor contém a Previsão Orçamentária ou a Despesa Realizada Total do
     # localizador, antes do rateio. Esta função distribui esses valores a
-    # cada município com os pesos individuais calculados em src/imrs.py.
+    # cada município com os pesos individuais calculados em src/imrs/preparar_imrs.py.
 
     # Planejado ou Executado exclusivamente municipal. Filtra os localizadores
     # do tipo municipal e soma valor pelo Código do Município IBGE. Em seguida,
@@ -84,6 +84,6 @@ def gerar_tabela_11(planejamento, monitoramento, municipios):
     )
 
     # Ordena as duas saídas pelo Código do Município IBGE. Cada uma contém
-    # 50 linhas de detalhe. A conferência do Total Geral roda em src/imrs.py.
+    # 50 linhas de detalhe. A conferência do Total Geral roda em src/imrs/gerar.py.
     ordem = tabela.sort_values("codigo_ibge").index
     return tabela.loc[ordem].reset_index(drop=True), memoria.loc[ordem].reset_index(drop=True)

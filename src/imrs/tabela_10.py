@@ -8,36 +8,10 @@ participacao_grupo, participacao_global e execucao, respectivamente.
 
 import pandas as pd
 
+from src.imrs.preparar_imrs import CHAVES_AREA, GRUPOS
 
-# Ordem dos blocos na A.TEM_final. O bloco Outros* apresenta Outros Poderes.
-GRUPOS = (
-    "Áreas Temáticas Finalísticas",
-    "Áreas Temáticas de Apoio e Suporte",
-    "Outros Poderes",
-)
-CHAVES_AREA = ["grupo_area_tematica", "area_tematica"]
+
 PERCENTUAIS = ["participacao_grupo", "participacao_global", "execucao"]
-
-
-def classificar_areas(base):
-    """Confere o vínculo entre cada Área Temática e seu grupo antes do rateio."""
-    # A preparação associa o código da Área Temática a um grupo do PPAG e
-    # padroniza a denominação entre planejamento e monitoramento. Aqui, limpa
-    # os espaços nas duas chaves e trata textos vazios como dados ausentes.
-    dados = base.copy()
-    for coluna in CHAVES_AREA:
-        dados[coluna] = dados[coluna].astype("string").str.strip().replace("", pd.NA)
-
-    # Quando o registro já pertence a Outros Poderes e a área está vazia,
-    # preenche a área com Outros Poderes para incluí-la no agrupamento.
-    outros_poderes = dados["grupo_area_tematica"].eq("Outros Poderes").fillna(False)
-    sem_area = dados["area_tematica"].isna()
-    dados.loc[outros_poderes & sem_area, "area_tematica"] = "Outros Poderes"
-    # Interrompe se sobrar área em branco ou se o grupo estiver fora da lista.
-    # Assim, nenhum valor fica fora dos subtotais por falta de classificação.
-    if not dados["grupo_area_tematica"].isin(GRUPOS).all() or dados["area_tematica"].isna().any():
-        raise ValueError("Há registros sem classificação válida de área temática e grupo.")
-    return dados
 
 
 def _agrupar_areas(base, valor):

@@ -6,9 +6,31 @@ Produzir os três demonstrativos do RIM referentes aos municípios classificados
 - por área temática;
 - por município.
 
-## 2. Recorte de municípios
-Selecionar os 50 municípios com menor valor de IMRS na edição utilizada como referência para o exercício.
-A seleção deve ser feita ordenando o índice em ordem crescente e mantendo os 50 primeiros municípios.
+Produzir também os Mapas 6 e 7 a partir dos valores municipais da Tabela 11.
+
+## 2. Bases, chaves e regras comuns
+
+### 2.1. Bases e referências
+
+Usar os localizadores de planejamento para o programado anual e os localizadores de monitoramento do bimestre para o realizado acumulado. Vincular municípios, população, índice e malha pelo código IBGE de sete dígitos.
+
+Os parâmetros atuais usam a edição **2024 do IMRS** e a estimativa populacional **2025 do IBGE**. A edição do índice e o ano da população são parâmetros da execução. A identificação dos localizadores e a referência populacional seguem os itens 2.1 e 2.2 de [Regionalização](regras_regionalizacao.md).
+
+### 2.2. Recorte de municípios e desempate
+
+Selecionar os 50 municípios com menor valor de IMRS na edição utilizada como referência para o exercício. Ordenar o índice em ordem crescente e manter os 50 primeiros.
+
+Na edição de 2024, o código atual prioriza **Presidente Olegário**, código IBGE `3153400`, entre os municípios empatados em **0,225** no corte da 50ª posição, para reproduzir a lista da referência manual. Após essa prioridade, desempatar pelo código IBGE crescente. Nas demais edições, o desempate implementado usa o código IBGE crescente. Essa é a convenção de reprodução adotada no projeto.
+
+### 2.3. Classificação das Áreas Temáticas
+
+Usar a correspondência entre código de área e grupo do item 4.3 de [Execução Global](regras_execucao_global.md). No DataFrame do IMRS, a área 15 compõe o grupo **Outros Poderes**. Normalizar os códigos e conferir áreas sem denominação antes das agregações.
+
+### 2.4. Exclusão lógica
+
+Antes de calcular o programado das Tabelas 9, 10 e 11, excluir da base de planejamento todos os registros de localizadores com `Exclusão Lógica da Ação = True`. Aplicar o filtro antes da apropriação territorial e das agregações financeiras.
+
+O campo é o da ação na base de planejamento. O realizado é calculado a partir da base de monitoramento do bimestre.
 
 ## 3. Valores considerados
 Para cada exercício devem ser considerados:
@@ -218,6 +240,10 @@ Exemplo estrutural:
 | 1 | Programa A | 1000000.00 | 250000.00 |
 | 2 | Programa B | 0.00 | 50000.00 |
 | 3 | Programa C | 800000.00 | 0.00 |
+| n | Programa n | … | … |
+| | **Total Geral** | Soma do programado | Soma do realizado |
+
+A linha Total Geral é acrescentada na apresentação e inclui todos os programas da tabela.
 
 ---
 
@@ -427,13 +453,19 @@ A granularidade final será:
 
     1 linha = 1 área temática
 
-Exemplo estrutural:
+Exemplo estrutural com valores ilustrativos:
 
 | grupo_area_tematica | area_tematica | programado | realizado | participacao_grupo | participacao_global | execucao |
 |---|---|---:|---:|---:|---:|---:|
-| Finalísticas | Educação | 1000000.00 | 700000.00 | 0.35 | 0.20 | 0.70 |
-| Finalísticas | Saúde | 1500000.00 | 900000.00 | 0.45 | 0.26 | 0.60 |
-| Apoio e Suporte | Planejamento e Gestão | 300000.00 | 150000.00 | 0.40 | 0.04 | 0.50 |
+| Finalísticas | Educação | 1000.00 | 800.00 | 0.80 | 0.40 | 0.80 |
+| Finalísticas | Saúde | 500.00 | 200.00 | 0.20 | 0.10 | 0.40 |
+| Finalísticas | **Subtotal** | 1500.00 | 1000.00 | 1.00 | 0.50 | 0.6667 |
+| Apoio e Suporte | Planejamento e Gestão | 2000.00 | 1000.00 | 1.00 | 0.50 | 0.50 |
+| Apoio e Suporte | **Subtotal** | 2000.00 | 1000.00 | 1.00 | 0.50 | 0.50 |
+| | **Total Geral** | 3500.00 | 2000.00 | 1.00 | 1.00 | 0.5714 |
+
+Na apresentação, calcular o Total Geral somando as linhas de detalhe de cada
+área uma vez. Recalcular a execução como realizado total ÷ programado total.
 
 ---
 
@@ -647,7 +679,8 @@ A granularidade final será:
 
     1 linha = 1 município do recorte
 
-e o dataframe possuirá exatamente 50 linhas.
+O DataFrame possui exatamente 50 linhas de detalhe. A apresentação
+acrescenta o Total Geral, calculado sobre os 50 municípios.
 
 Exemplo estrutural:
 
@@ -656,8 +689,48 @@ Exemplo estrutural:
 | 3100203 | Município A | 145100951.07 | 32328644.50 |
 | 3100302 | Município B | 25000000.00 | 8000000.00 |
 | 3100401 | Município C | 0.00 | 0.00 |
+| … | … | … | … |
+| | **Total Geral** | Soma do programado | Soma do realizado |
 
-## 12. Fechamento
+## 12. Mapa 6 — Valor global programado nos municípios do recorte IMRS
+
+### 12.1. Dados, malha e chave
+
+Usar `codigo_ibge` e `programado` das 50 linhas municipais da Tabela 11. Vincular os dados à malha municipal de MG pelo código IBGE e retirar a linha Total Geral do cruzamento.
+
+### 12.2. Indicador e escala de cores
+
+Na implementação atual, converter o programado para **R$ milhões** e usar escala contínua do rosa claro ao vermelho escuro. O limite inferior é o menor valor entre zero e o mínimo observado no recorte. O superior é o maior entre zero e o máximo observado no recorte.
+
+Municípios fora do recorte aparecem em cinza. Zero dentro do recorte recebe a cor correspondente da escala. Se todos os valores forem zero, exibir essa condição na legenda.
+
+### 12.3. Combinação e filtro
+
+Manter os municípios de MG como fundo e colorir os 50 municípios selecionados, preservando valores zero. Cada código da Tabela 11 deve ter correspondência na malha.
+
+### 12.4. Resultado esperado
+
+PNG contendo o mapa, as divisas municipais, a escala em R$ milhões e a legenda do recorte. O título, o subtítulo e a fonte são inseridos no relatório.
+
+## 13. Mapa 7 — Valor global realizado nos municípios do recorte IMRS
+
+### 13.1. Dados, malha e chave
+
+Usar `codigo_ibge` e `realizado` das 50 linhas municipais da Tabela 11, com a mesma malha e os mesmos vínculos do Mapa 6.
+
+### 13.2. Indicador e escala de cores
+
+Converter o realizado acumulado para **R$ milhões**. Usar escala contínua do verde claro ao verde escuro, com limites calculados sobre o realizado pelo mesmo procedimento do Mapa 6. Os dois mapas possuem escalas próprias.
+
+### 13.3. Combinação e filtro
+
+Aplicar o recorte, a conferência dos códigos e o tratamento de zero e de municípios fora do recorte definidos para o Mapa 6.
+
+### 13.4. Resultado esperado
+
+PNG com o realizado acumulado até o bimestre, divisas, escala em R$ milhões e legenda do recorte. O título, o subtítulo e a fonte são inseridos no relatório.
+
+## 14. Fechamento
 Os totais das três tabelas devem coincidir:
 
     total por programa
@@ -671,17 +744,16 @@ A igualdade deve ser verificada separadamente para:
 - programado;
 - realizado.
 
-## 13. Particularidades
+Conferir também se os valores vinculados aos Mapas 6 e 7 são os da Tabela 11 para os mesmos códigos municipais.
+
+## 15. Particularidades e pendências da referência
 
 ### Programas sociais
 Atualmente é um filtro não utilizado pois não são demonstrativos presentes no RIM Social, mas é uma base válida de ser considerada.
 
-### Exclusão lógica
-Antes de calcular o programado das Tabelas 9, 10 e 11, excluir da base de
-planejamento todos os registros de localizadores com `Exclusão Lógica da Ação = True`.
-Aplicar o filtro antes da apropriação territorial e das agregações financeiras.
-O filtro se aplica ao campo da ação na base de planejamento. O realizado é
-calculado a partir da base de monitoramento do bimestre.
-
 ### Execução sem programação
-Programas com execução e sem valor inicialmente programado devem permanecer Essa ocorrência não deve ser tratada como erro.
+Preservar programas com execução e sem valor inicialmente programado.
+
+### Referência das cores dos mapas
+
+O texto do RIM descreve a intensidade das cores em relação à média estadual. Os itens 12 e 13 registram a escala atualmente implementada no projeto, baseada nos valores do recorte e em zero. A adoção da média estadual como referência das cores permanece como decisão a confirmar.

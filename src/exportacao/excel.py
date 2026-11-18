@@ -1,9 +1,41 @@
-"""Aplica o padrão visual do RIM às tabelas do Excel."""
+"""Funções de exportação dos resultados do monitoramento."""
 
+import pandas as pd
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from src.relatorio_imrs import AZUL, AZUL_CLARO, ELABORACAO, FONTE, NOTA_PODERES
+from src.exportacao.estilo import AZUL, AZUL_CLARO, ELABORACAO, FONTE, NOTA_PODERES
+
+
+def exportar_excel(tabelas, caminho, formatos=None, *, quadros=None):
+    """
+    Exporta um conjunto de DataFrames para um arquivo Excel.
+
+    tabelas deve ser um dicionário no formato:
+    {"nome_da_aba": dataframe}
+    formatos associa nomes de colunas a formatos numéricos do Excel.
+    """
+
+    # Cada chave do dicionário vira o nome de uma aba. A primeira linha recebe
+    # os nomes das colunas. O índice do DataFrame fica fora do relatório.
+    with pd.ExcelWriter(caminho, engine="openpyxl") as writer:
+        for nome, df in tabelas.items():
+            if quadros and nome in quadros:
+                formatar_aba_rim(writer.book.create_sheet(nome), quadros[nome])
+                continue
+            df.to_excel(
+                writer,
+                sheet_name=nome,
+                index=False
+            )
+            if formatos:
+                planilha = writer.sheets[nome]
+                for indice, coluna in enumerate(df.columns, start=1):
+                    if coluna in formatos:
+                        # Formata a exibição das células abaixo do cabeçalho.
+                        # Os valores mantêm a precisão e o tipo de origem.
+                        for linha in range(2, len(df) + 2):
+                            planilha.cell(linha, indice).number_format = formatos[coluna]
 
 
 MOEDA = '#,##0.00;-#,##0.00;"–"'

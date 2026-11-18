@@ -10,7 +10,7 @@ def _agrupar_programas(base, valor):
     """Transforma os valores por localizador em um total por programa."""
     # valor_imrs é a coluna que corresponde a Proporcional Reginte IMRS nas
     # abas de localizadores da referência. Cada linha já traz a parcela que
-    # cabe ao recorte dos 50 municípios, calculada em src/imrs.py.
+    # cabe ao recorte dos 50 municípios, calculada em src/imrs/preparar_imrs.py.
     # Um localizador municipal entra por inteiro se estiver no recorte e vale
     # zero fora dele. Nos localizadores regionais e estaduais, entra a fração
     # da população que os municípios do recorte representam no território.
