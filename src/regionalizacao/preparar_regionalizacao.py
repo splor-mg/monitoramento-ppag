@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 from src.config import N_MUNICIPIOS_MG, PASTA_DADOS
-from src.imrs.preparar_imrs import _ler_localizadores, _ler_populacao
+from src.imrs.preparar_imrs import _ler_localizadores, carregar_populacao
 from src.preparar import carregar_txt, codigo_texto
 
 
@@ -12,7 +12,7 @@ CODIGO = "codigo_regiao_intermediaria"
 NOME = "regiao_intermediaria"
 
 
-def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=2025):
+def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=2026):
     """Retorna planejamento elegível, monitoramento e população municipal."""
     if bimestre not in range(1, 7):
         raise ValueError("O bimestre deve estar entre 1 e 6.")
@@ -25,7 +25,7 @@ def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=2025):
         raw / "monitoramento" / f"{bimestre}bim" / "localizadores_monitoramento.txt",
         f"Despesa Realizada Total {ano}", "executado", periodo=(ano, bimestre),
     )
-    populacao = _ler_populacao(raw / "externas" / f"estimativa_dou_{ano_populacao}.xls", planejamento, monitoramento)
+    populacao = carregar_populacao(ano_populacao, planejamento, monitoramento)
     # Os nomes ficam associados ao código do SIGPlan. Esse vínculo permite
     # formar a malha regional a partir da malha municipal, sem trocar códigos.
     nomes = carregar_txt(caminho, usecols=["Código da Região Geográfica Intermediária", "Região Geográfica Intermediária"], dtype="string")

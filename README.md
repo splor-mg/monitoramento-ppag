@@ -28,7 +28,7 @@ poetry run python main.py --ano 2026 --bimestre 2
 O comando lê as quatro bases em `data/raw` e grava `outputs/IMRS_2026_2bim.xlsx`,
 com uma aba por tabela e a memória de cálculo municipal. As bases incluídas
 cobrem os três primeiros bimestres de 2026. Os padrões são IMRS de 2024 e
-população de 2025. Use `--ano-imrs` e `--ano-populacao` para escolher outras
+projeção populacional FJP de 2026, baseada no IBGE. Use `--ano-imrs` e `--ano-populacao` para escolher outras
 edições disponíveis e `--saida` para definir o caminho do arquivo.
 
 O Excel aplica o padrão azul do RIM e inclui subtotais e totais. A mesma

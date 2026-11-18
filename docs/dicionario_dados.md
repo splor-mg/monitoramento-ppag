@@ -151,7 +151,7 @@ Instituto Brasileiro de Geografia e Estatística — IBGE.
 Anual.
 
 ### Edição utilizada na rotina
-O parâmetro `ano_populacao` usa **2025** como padrão, com o arquivo `data/raw/externas/estimativa_dou_2025.xls`. Registrar a edição efetivamente utilizada em cada execução.
+O parâmetro `ano_populacao` usa **2026** como padrão: projeção municipal da FJP baseada no IBGE, aba `2026` de `data/raw/externas/projecoes_populacionais_fjp_2025_2047.xlsx`. A edição IBGE 2025 permanece disponível para reproduzir cálculos anteriores. Registrar a edição efetivamente utilizada em cada execução.
 
 ### Unidade de observação
 Município.

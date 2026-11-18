@@ -98,17 +98,29 @@ def _ler_localizadores(caminho, coluna_origem, coluna_valor, periodo=None):
 
 def _ler_populacao(caminho, planejamento, monitoramento):
     """Associa a população dos municípios de MG à região registrada no SIGPlan."""
-    colunas = ["UF", "COD. UF", "COD. MUNIC", "NOME DO MUNICÍPIO", "POPULAÇÃO ESTIMADA"]
-    dados = carregar_excel(caminho, sheet_name="Municípios", header=1, usecols=colunas, dtype="string")
-    mg = dados.loc[dados["UF"].eq("MG")].copy()
-
-    # O código IBGE de sete dígitos combina o código da UF e os cinco dígitos
-    # municipais. A população de toda MG compõe os denominadores dos rateios.
-    populacao = pd.DataFrame({
-        "codigo_ibge": mg["COD. UF"].str.strip() + mg["COD. MUNIC"].str.strip().str.zfill(5),
-        "municipio": mg["NOME DO MUNICÍPIO"].str.strip(),
-        "populacao": numero_decimal(mg["POPULAÇÃO ESTIMADA"]),
-    })
+    if caminho.suffix == ".xlsx":
+        # A FJP publicou em 2025 a projeção municipal para 2026, baseada no
+        # IBGE. Na aba 2026, A:C contêm código IBGE, município e população total;
+        # as três primeiras linhas são cabeçalhos. Não usa os recortes por sexo.
+        populacao = carregar_excel(
+            caminho, sheet_name="2026", header=None, skiprows=3, usecols="A:C",
+            names=["codigo_ibge", "municipio", "populacao"], dtype="string",
+        )
+        populacao["codigo_ibge"] = codigo_texto(populacao["codigo_ibge"])
+        populacao = populacao.loc[populacao["codigo_ibge"].str.fullmatch(r"31\d{5}", na=False)].copy()
+        populacao["municipio"] = codigo_texto(populacao["municipio"])
+        populacao["populacao"] = numero_decimal(populacao["populacao"])
+    else:
+        # Mantém a leitura da estimativa IBGE de 2025 para reproduzir rodadas
+        # anteriores quando --ano-populacao 2025 for solicitado explicitamente.
+        colunas = ["UF", "COD. UF", "COD. MUNIC", "NOME DO MUNICÍPIO", "POPULAÇÃO ESTIMADA"]
+        dados = carregar_excel(caminho, sheet_name="Municípios", header=1, usecols=colunas, dtype="string")
+        mg = dados.loc[dados["UF"].eq("MG")].copy()
+        populacao = pd.DataFrame({
+            "codigo_ibge": mg["COD. UF"].str.strip() + mg["COD. MUNIC"].str.strip().str.zfill(5),
+            "municipio": mg["NOME DO MUNICÍPIO"].str.strip(),
+            "populacao": numero_decimal(mg["POPULAÇÃO ESTIMADA"]),
+        })
 
     # Os registros municipais dos dois arquivos já contêm a região. Remove
     # repetições e valida que cada município tem uma única região intermediária.
@@ -119,6 +131,16 @@ def _ler_populacao(caminho, planejamento, monitoramento):
         monitoramento.loc[monitoramento["tipo_localizador"].eq("municipal"), chaves],
     ]).drop_duplicates()
     return populacao.merge(vinculos, on="codigo_ibge", how="left", validate="one_to_one")
+
+
+def carregar_populacao(ano_populacao, planejamento, monitoramento):
+    """Escolhe a edição local, comum ao IMRS e à Regionalização."""
+    externas = PASTA_DADOS / "raw" / "externas"
+    arquivo = (
+        "projecoes_populacionais_fjp_2025_2047.xlsx" if ano_populacao == 2026
+        else f"estimativa_dou_{ano_populacao}.xls"
+    )
+    return _ler_populacao(externas / arquivo, planejamento, monitoramento)
 
 
 def _ler_imrs(caminho, ano_imrs):
@@ -170,9 +192,7 @@ def carregar_bases_imrs(ano, bimestre, ano_imrs, ano_populacao):
         periodo=(ano, bimestre),
     )
     _padronizar_areas(planejamento, monitoramento)
-    populacao = _ler_populacao(
-        externas / f"estimativa_dou_{ano_populacao}.xls", planejamento, monitoramento,
-    )
+    populacao = carregar_populacao(ano_populacao, planejamento, monitoramento)
     imrs = _ler_imrs(externas / "IMRS-consulta-indicadores.xlsx", ano_imrs)
     return planejamento, monitoramento, populacao, imrs
 

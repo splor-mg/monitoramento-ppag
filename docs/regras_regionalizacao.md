@@ -6,7 +6,7 @@ Apresentar a programação e a execução orçamentária do PPAG nas 13 Regiões
 
 ## 2. Bases, valores e variáveis consideradas
 
-Usar a programação anual dos localizadores de planejamento e a **Despesa Realizada Total** dos localizadores do monitoramento de janeiro até o fim do bimestre. Usar a população de referência e a malha territorial do IBGE.
+Usar a programação anual dos localizadores de planejamento e a **Despesa Realizada Total** dos localizadores do monitoramento de janeiro até o fim do bimestre. Usar a população de referência FJP/IBGE e a malha territorial do IBGE.
 
 | Variável | Tipo | Descrição |
 |---|---|---|
@@ -22,7 +22,9 @@ Usar a programação anual dos localizadores de planejamento e a **Despesa Reali
 
 ### 2.1. População de referência
 
-Na rotina atual, usar a estimativa municipal do IBGE de **2025**, em `data/raw/externas/estimativa_dou_2025.xls`, selecionada pelo parâmetro `ano_populacao`. Manter a mesma edição nos denominadores municipais, regionais e estadual e registrar a edição utilizada.
+Usar a projeção municipal da **FJP para 2026, baseada no IBGE**, divulgada em 2025: aba `2026` de `data/raw/externas/projecoes_populacionais_fjp_2025_2047.xlsx`. Os 853 municípios somam **21.460.311 habitantes**. Manter essa edição fixa em todos os bimestres de 2026, nos pesos dos rateios e nos denominadores per capita municipais, regionais e estadual. A troca da população preserva o total estadual elegível, mas altera sua distribuição territorial e os indicadores per capita. `--ano-populacao 2025` permite reproduzir as rodadas anteriores. Origem e download estão registrados em [População FJP](../data/raw/externas/populacao_fjp.md).
+
+Conferência com essa edição: o total programado estadual permanece R$ 158.228.308.922,00. O executado per capita estadual é R$ 842,13 no 1º bimestre, R$ 1.874,54 no 2º e R$ 3.156,98 no 3º.
 
 A matriz manual de 2026 identifica a aba como projeção para 2026 e a coluna como população de 2025. Registrar essa diferença de identificação ao conferir a referência. A população regional é a soma dos municípios da região e a estadual é a soma dos 853 municípios de MG.
 
@@ -292,11 +294,11 @@ Mapa das 13 regiões de Minas Gerais coloridas segundo a execução acumulada po
 
 ## 11. Particularidades da referência
 
-- O per capita estadual calculado com os localizadores é R$ 844,76 em fevereiro, R$ 1.880,40 em abril e R$ 3.166,84 em junho de 2026. A Tabela 8 publicada de fevereiro e a matriz manual de junho coincidem com seus respectivos valores. A matriz de abril conserva R$ 844,76 no total, apesar de os detalhes regionais somarem R$ 40.228.138.480,84. Os scripts usam o total executado do próprio período dividido pela população estadual.
+- Na conferência anterior com a população IBGE de 2025, o per capita estadual calculado com os localizadores é R$ 844,76 em fevereiro, R$ 1.880,40 em abril e R$ 3.166,84 em junho de 2026. A Tabela 8 publicada de fevereiro e a matriz manual de junho coincidem com seus respectivos valores. A matriz de abril conserva R$ 844,76 no total, apesar de os detalhes regionais somarem R$ 40.228.138.480,84. Os scripts usam o total executado do próprio período dividido pela população estadual.
 - As Tabelas 7 e 8 e os Mapas 2 a 5 da cópia do 3º bimestre repetem as imagens do 2º e servem como referência de abril.
 - Em fevereiro, a base de ações informa R$ 10.714,63 para a ação 4491 — Apreensão e Liberação de Veículos, UO 2481 — DETRAN-MG. Seu único localizador é Belo Horizonte, IBGE 3106200, com realizado zero no extrato do 1º bimestre. O relatório financeiro confirma o gasto em fevereiro, Grupo 1, Elemento 11, Item 17, Procedência 1, na célula L9733 da aba Relatório BO 1 de `Despesa de Pessoal - Gabriel.xlsx`, pasta corporativa do 1º bimestre. Nos extratos de localizadores dos 2º e 3º bimestres, o mesmo valor já aparece no campo Desp. Realizada Pessoal e Auxílios Fev desse município. Isso evidencia uma atualização posterior da informação territorial de fevereiro. O histórico disponível não identifica a causa operacional dessa atualização. A rotina sinaliza a divergência e preserva os valores de cada fonte.
 - O realizado das 13 regiões coincide com as matrizes manuais de abril e junho. A distribuição regional do programado difere dos valores preenchidos na referência, apesar de o total anual coincidir. Os scripts usam a base atual de localizadores elegíveis e registram as três parcelas territoriais para rastreamento.
 - Na matriz de junho, o realizado municipal foi conferido para os 853 municípios e coincide com a base territorial. O programado em ` Global!C3:C15` contém valores fixos, sem fórmula que identifique a base original. As diferenças regionais devem ser tratadas como divergências da referência até que essa origem seja identificada.
 - Em `Per capita GLOBAL!C16`, a matriz de junho guarda o valor arredondado 7396,11. O cálculo integral é 158228308922 ÷ 21393441 = 7396,113085407813. Usar a divisão por fórmula preserva a precisão de B/A em E16. O arredondamento para duas casas pertence à apresentação.
-- Na pasta corporativa `1º Bimestre/RIM GERAL/Dados/Mapas`, o arquivo `Matriz Mapa - Programado-  Geral - 2026  - Daniel.xlsx` contém em `Planilha3!B15:D15` população de 21.460.311, programado de R$ 160.176.559.171,00 e per capita de R$ 7.463,85. O programado coincide com a soma bruta dos localizadores. A diferença para o total elegível de R$ 158.228.308.922,00 é R$ 1.948.250.249,00, igual à soma dos registros com exclusão lógica de ação. A população também difere da estimativa de 2025 adotada nos scripts.
+- Na pasta corporativa `1º Bimestre/RIM GERAL/Dados/Mapas`, o arquivo `Matriz Mapa - Programado-  Geral - 2026  - Daniel.xlsx` contém em `Planilha3!B15:D15` população de 21.460.311, programado de R$ 160.176.559.171,00 e per capita de R$ 7.463,85. O programado coincide com a soma bruta dos localizadores. A diferença para o total elegível de R$ 158.228.308.922,00 é R$ 1.948.250.249,00, igual à soma dos registros com exclusão lógica de ação. A população também difere da estimativa de 2025 usada anteriormente nos scripts. Os valores das 13 regiões coincidem com a projeção FJP 2026 agora adotada.
 - Nessa mesma pasta, `Matriz Mapa GERAL _Daniel.xlsx` conserva o executado de fevereiro de R$ 18.072.337.482,14 e usa população de 21.460.311, resultando em R$ 842,13 por habitante. As duas matrizes de mapas recebem os valores regionais fixos em Planilha3. Mesmo reproduzindo o total bruto e os pesos populacionais dessa referência, permanece diferença na distribuição regional do programado. A memória anterior à agregação regional é necessária para identificar os registros que a originaram.

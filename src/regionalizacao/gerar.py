@@ -22,7 +22,7 @@ from .tabela_07 import gerar_tabela_7
 from .tabela_08 import gerar_tabela_8
 
 
-def gerar_regionalizacao(ano, bimestre, ano_populacao=2025, saida=None, malha=MALHA_PADRAO):
+def gerar_regionalizacao(ano, bimestre, ano_populacao=2026, saida=None, malha=MALHA_PADRAO):
     planejamento, monitoramento, populacao = carregar_bases_regionalizacao(ano, bimestre, ano_populacao)
     regioes = agregar_populacao(populacao)
     programado = apropriar_regioes(planejamento, "programado", populacao, regioes)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Gera as Tabelas 7 e 8 e os Mapas 1 a 5 do RIM.")
     parser.add_argument("--ano", type=int, required=True)
     parser.add_argument("--bimestre", type=int, required=True, choices=range(1, 7))
-    parser.add_argument("--ano-populacao", type=int, default=2025)
+    parser.add_argument("--ano-populacao", type=int, default=2026, help="População: FJP 2026 (padrão) ou IBGE 2025.")
     parser.add_argument("--saida", type=Path, help="Pasta de saída do Excel e dos PNGs.")
     parser.add_argument("--malha", type=Path, default=MALHA_PADRAO)
     args = parser.parse_args()
