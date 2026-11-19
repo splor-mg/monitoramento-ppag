@@ -10,9 +10,13 @@ from src.preparar import carregar_txt, codigo_texto
 
 CODIGO = "codigo_regiao_intermediaria"
 NOME = "regiao_intermediaria"
+# Referência aprovada para este bloco: estimativa municipal IBGE de 2025.
+# O total é uma conferência da edição, não um denominador imposto ao rateio.
+ANO_POPULACAO_PADRAO = 2025
+POPULACAO_MG_ESPERADA = 21_393_441
 
 
-def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=2026):
+def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=ANO_POPULACAO_PADRAO):
     """Retorna planejamento elegível, monitoramento e população municipal."""
     if bimestre not in range(1, 7):
         raise ValueError("O bimestre deve estar entre 1 e 6.")
@@ -42,6 +46,13 @@ def carregar_bases_regionalizacao(ano, bimestre, ano_populacao=2026):
         raise ValueError("Há município sem população ou vínculo regional válido.")
     if not populacao["populacao"].gt(0).all():
         raise ValueError("A população municipal precisa ser positiva para os rateios.")
+    if populacao["populacao"].sum() != POPULACAO_MG_ESPERADA:
+        raise ValueError(
+            "A Regionalização deve usar a referência municipal com total de "
+            f"{POPULACAO_MG_ESPERADA:,} habitantes. "
+            f"A base selecionada soma {populacao['populacao'].sum():,.0f}. "
+            "Use a estimativa IBGE de 2025 (--ano-populacao 2025)."
+        )
     return planejamento, monitoramento, populacao
 
 

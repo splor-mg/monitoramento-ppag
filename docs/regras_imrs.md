@@ -14,9 +14,9 @@ Produzir também os Mapas 6 e 7 a partir dos valores municipais da Tabela 11.
 
 Usar os localizadores de planejamento para o programado anual e os localizadores de monitoramento do bimestre para o realizado acumulado. Vincular municípios, população, índice e malha pelo código IBGE de sete dígitos.
 
-Os parâmetros atuais usam a edição **2024 do IMRS** e a projeção populacional **2026 da FJP, baseada no IBGE**. A edição do índice e o ano da população são parâmetros da execução. A identificação dos localizadores e a referência populacional seguem os itens 2.1 e 2.2 de [Regionalização](regras_regionalizacao.md).
+Os parâmetros atuais usam o **índice IMRS 2024, da FJP**, e a **estimativa populacional IBGE 2025**, em `data/raw/externas/estimativa_dou_2025.xls`, aba `Municípios`. Essa é a referência da aba `pop_2025_ibge` da planilha manual: os 853 municípios de MG somam **21.393.441 habitantes**. A identificação dos localizadores e a referência populacional seguem os itens 2.1 e 2.2 de [Regionalização](regras_regionalizacao.md).
 
-A mudança da população altera os pesos de apropriação e, portanto, os valores programados e realizados do recorte dos 50 municípios. Com as bases atuais de 2026, o programado do IMRS passa de R$ 2.585.968.212,15 (população IBGE 2025) para R$ 2.604.033.093,01 (projeção FJP 2026). O orçamento estadual total permanece igual.
+Usar a mesma referência populacional no IMRS e na Regionalização. Os valores financeiros continuam referentes ao exercício monitorado de 2026. Com as bases atuais e a população IBGE 2025, o programado do recorte IMRS é **R$ 2.585.968.212,15**. A população usada nos rateios não se confunde com a edição do índice que seleciona os 50 municípios.
 
 ### 2.2. Recorte de municípios e desempate
 

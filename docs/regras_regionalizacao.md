@@ -6,7 +6,7 @@ Apresentar a programação e a execução orçamentária do PPAG nas 13 Regiões
 
 ## 2. Bases, valores e variáveis consideradas
 
-Usar a programação anual dos localizadores de planejamento e a **Despesa Realizada Total** dos localizadores do monitoramento de janeiro até o fim do bimestre. Usar a população de referência FJP/IBGE e a malha territorial do IBGE.
+Usar a programação anual dos localizadores de planejamento e a **Despesa Realizada Total** dos localizadores do monitoramento de janeiro até o fim do bimestre. Usar a população municipal IBGE de 2025 e a malha territorial do IBGE.
 
 | Variável | Tipo | Descrição |
 |---|---|---|
@@ -22,9 +22,11 @@ Usar a programação anual dos localizadores de planejamento e a **Despesa Reali
 
 ### 2.1. População de referência
 
-Usar a projeção municipal da **FJP para 2026, baseada no IBGE**, divulgada em 2025: aba `2026` de `data/raw/externas/projecoes_populacionais_fjp_2025_2047.xlsx`. Os 853 municípios somam **21.460.311 habitantes**. Manter essa edição fixa em todos os bimestres de 2026, nos pesos dos rateios e nos denominadores per capita municipais, regionais e estadual. A troca da população preserva o total estadual elegível, mas altera sua distribuição territorial e os indicadores per capita. `--ano-populacao 2025` permite reproduzir as rodadas anteriores. Origem e download estão registrados em [População FJP](../data/raw/externas/populacao_fjp.md).
+Usar a estimativa municipal **IBGE de 2025**, em `data/raw/externas/estimativa_dou_2025.xls`, aba `Municípios`. Os 853 municípios de MG devem somar **21.393.441 habitantes**. Manter essa edição nos pesos dos rateios e nos denominadores per capita de todos os bimestres de 2026. Os valores financeiros continuam sendo os do exercício de 2026.
 
-Conferência com essa edição: o total programado estadual permanece R$ 158.228.308.922,00. O executado per capita estadual é R$ 842,13 no 1º bimestre, R$ 1.874,54 no 2º e R$ 3.156,98 no 3º.
+Conferir a soma da população lida e interromper se divergir dessa referência. O total esperado é uma validação; os pesos são calculados com as populações municipais do arquivo, sem ajustar valores para forçar o total. O IMRS usa a mesma estimativa IBGE 2025, correspondente à aba manual `pop_2025_ibge`.
+
+Conferência com a referência IBGE 2025: o total programado estadual permanece R$ 158.228.308.922,00. O executado per capita estadual é R$ 844,76 no 1º bimestre, R$ 1.880,40 no 2º e R$ 3.166,84 no 3º.
 
 A matriz manual de 2026 identifica a aba como projeção para 2026 e a coluna como população de 2025. Registrar essa diferença de identificação ao conferir a referência. A população regional é a soma dos municípios da região e a estadual é a soma dos 853 municípios de MG.
 
@@ -300,5 +302,5 @@ Mapa das 13 regiões de Minas Gerais coloridas segundo a execução acumulada po
 - O realizado das 13 regiões coincide com as matrizes manuais de abril e junho. A distribuição regional do programado difere dos valores preenchidos na referência, apesar de o total anual coincidir. Os scripts usam a base atual de localizadores elegíveis e registram as três parcelas territoriais para rastreamento.
 - Na matriz de junho, o realizado municipal foi conferido para os 853 municípios e coincide com a base territorial. O programado em ` Global!C3:C15` contém valores fixos, sem fórmula que identifique a base original. As diferenças regionais devem ser tratadas como divergências da referência até que essa origem seja identificada.
 - Em `Per capita GLOBAL!C16`, a matriz de junho guarda o valor arredondado 7396,11. O cálculo integral é 158228308922 ÷ 21393441 = 7396,113085407813. Usar a divisão por fórmula preserva a precisão de B/A em E16. O arredondamento para duas casas pertence à apresentação.
-- Na pasta corporativa `1º Bimestre/RIM GERAL/Dados/Mapas`, o arquivo `Matriz Mapa - Programado-  Geral - 2026  - Daniel.xlsx` contém em `Planilha3!B15:D15` população de 21.460.311, programado de R$ 160.176.559.171,00 e per capita de R$ 7.463,85. O programado coincide com a soma bruta dos localizadores. A diferença para o total elegível de R$ 158.228.308.922,00 é R$ 1.948.250.249,00, igual à soma dos registros com exclusão lógica de ação. A população também difere da estimativa de 2025 usada anteriormente nos scripts. Os valores das 13 regiões coincidem com a projeção FJP 2026 agora adotada.
+- Na pasta corporativa `1º Bimestre/RIM GERAL/Dados/Mapas`, o arquivo `Matriz Mapa - Programado-  Geral - 2026  - Daniel.xlsx` contém em `Planilha3!B15:D15` população de 21.460.311, programado de R$ 160.176.559.171,00 e per capita de R$ 7.463,85. O programado coincide com a soma bruta dos localizadores. A diferença para o total elegível de R$ 158.228.308.922,00 é R$ 1.948.250.249,00, igual à soma dos registros com exclusão lógica de ação. Os valores populacionais das 13 regiões coincidem com a projeção FJP 2026; essa população não é a referência adotada atualmente na Regionalização, que usa IBGE 2025.
 - Nessa mesma pasta, `Matriz Mapa GERAL _Daniel.xlsx` conserva o executado de fevereiro de R$ 18.072.337.482,14 e usa população de 21.460.311, resultando em R$ 842,13 por habitante. As duas matrizes de mapas recebem os valores regionais fixos em Planilha3. Mesmo reproduzindo o total bruto e os pesos populacionais dessa referência, permanece diferença na distribuição regional do programado. A memória anterior à agregação regional é necessária para identificar os registros que a originaram.

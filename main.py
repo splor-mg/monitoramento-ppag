@@ -12,7 +12,7 @@ from src.imrs.texto import analisar
 from src.preparar import salvar_bases_processadas
 
 
-def main(ano, bimestre, ano_imrs=2024, ano_populacao=2026, saida=None, *, mapas=False):
+def main(ano, bimestre, ano_imrs=2024, ano_populacao=2025, saida=None, *, mapas=False):
     """Gera os produtos do IMRS e registra os DataFrames utilizados no cálculo."""
     # Recarrega as quatro bases brutas e prepara os valores de cada localizador
     # em memória. Reúne os DataFrames efetivamente usados nesta rodada.
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         "--ano-imrs", type=int, default=2024, help="Edição de referência do IMRS (padrão 2024).",
     )
     parser.add_argument(
-        "--ano-populacao", type=int, default=2026, help="População: FJP 2026 (padrão) ou IBGE 2025.",
+        "--ano-populacao", type=int, default=2025, help="Ano da estimativa municipal do IBGE (padrão 2025).",
     )
     parser.add_argument("--saida", type=Path, help="Caminho do arquivo Excel a gerar.")
     parser.add_argument("--mapas", action="store_true", help="Inclui os Mapas 6 e 7 na mesma execução.")

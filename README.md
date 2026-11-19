@@ -28,7 +28,8 @@ poetry run python main.py --ano 2026 --bimestre 2
 O comando lê as quatro bases em `data/raw` e grava `outputs/IMRS_2026_2bim.xlsx`,
 com uma aba por tabela e a memória de cálculo municipal. As bases incluídas
 cobrem os três primeiros bimestres de 2026. Os padrões são IMRS de 2024 e
-projeção populacional FJP de 2026, baseada no IBGE. Use `--ano-imrs` e `--ano-populacao` para escolher outras
+estimativa populacional IBGE de 2025, correspondente à aba manual `pop_2025_ibge`.
+Use `--ano-imrs` e `--ano-populacao` para escolher outras
 edições disponíveis e `--saida` para definir o caminho do arquivo.
 
 O Excel aplica o padrão azul do RIM e inclui subtotais e totais. A mesma
@@ -112,8 +113,10 @@ poetry run python -m src.regionalizacao.gerar --ano 2026 --bimestre 3
 Gera as Tabelas 7 e 8 em Excel e um PNG por Mapa 1 a 5. Cada componente
 possui um script comentado em `src/regionalizacao/`. As saídas ficam em
 `outputs/Regionalizacao_<ano>_<bimestre>bim/`. Os argumentos `--saida`,
-`--ano-populacao` e `--malha` permitem escolher a pasta, a edição da população
-e a malha municipal, com os mesmos padrões usados no IMRS.
+`--ano-populacao` e `--malha` identificam a pasta, a edição da população
+e a malha municipal. Regionalização e IMRS usam a mesma estimativa IBGE 2025,
+com total de 21.393.441 habitantes. Os pesos são calculados diretamente
+das populações municipais dessa base.
 
 O programado desconsidera os registros marcados com exclusão lógica de ação.
 O per capita estadual divide o executado total pela população de MG.
