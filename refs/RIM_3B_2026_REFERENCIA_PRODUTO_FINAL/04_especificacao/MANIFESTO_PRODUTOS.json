@@ -1,0 +1,93 @@
+{
+  "pacote": "Referencia do produto final RIM - Monitoramento PPAG",
+  "referencia_original": "RIM GERAL - 3º Bimestre 2026.docx",
+  "periodo_rotulo": "3º bimestre de 2026",
+  "paginas_pdf": 35,
+  "produtos_previstos": {
+    "Execução Global": {
+      "tabelas": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "graficos": [],
+      "mapas": []
+    },
+    "Desempenho Consolidado": {
+      "tabelas": [
+        5,
+        6
+      ],
+      "graficos": [
+        1,
+        2
+      ],
+      "mapas": []
+    },
+    "Regionalização": {
+      "tabelas": [
+        7,
+        8
+      ],
+      "graficos": [],
+      "mapas": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "IMRS": {
+      "tabelas": [
+        9,
+        10,
+        11
+      ],
+      "graficos": [],
+      "mapas": [
+        6,
+        7
+      ]
+    },
+    "Pessoal e Auxílios": {
+      "tabelas": [
+        12
+      ],
+      "graficos": [],
+      "mapas": []
+    }
+  },
+  "contagens": {
+    "tabelas": 12,
+    "graficos": 2,
+    "mapas": 7
+  },
+  "formatos": {
+    "00_original/": "DOCX original, sem edições",
+    "01_visual/": "PDF paginado fiel à renderização do Word",
+    "02_texto/RIM_COMPLETO.md": "Texto e imagens vinculadas, para leitura por agentes",
+    "02_texto/secoes/": "Seções separadas para diminuir contexto",
+    "02_texto/RIM_NAVEGAVEL.html": "Leitura em navegador",
+    "02_texto/media/": "Figuras extraídas; EMF convertidas para PNG",
+    "04_especificacao/": "Guia de produtos e decisões de arquitetura"
+  },
+  "ressalvas": [
+    "Referência visual/estrutural; não tratar cifras como dados auditados",
+    "Documento com títulos de 3º bimestre, mas seções e tabelas de 2º bimestre",
+    "Conversão para Markdown preserva texto e figuras; nem todos os dados de tabelas incorporadas como imagem tornam-se pesquisáveis",
+    "Revalidar todas as fontes, regras e períodos antes de gerar o relatório definitivo"
+  ],
+  "imagens_extraidas": 24,
+  "imagens_emf_convertidas": [
+    "image17.emf",
+    "image18.emf",
+    "image19.emf",
+    "image20.emf",
+    "image23.emf",
+    "image6.emf",
+    "image8.emf"
+  ],
+  "data_criacao": "2026-11-23"
+}

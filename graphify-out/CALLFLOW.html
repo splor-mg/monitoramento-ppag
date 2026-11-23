@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>monitoramento-ppag — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>monitoramento-ppag — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 262 nodes, 615 edges, 13 communities. Commit: adcd124</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#cli-skills">CLI &amp; Skill Installers</a>
+    <a href="#security-global">Security &amp; Global Graph</a>
+    <a href="#desempenho-prepararpy-grafico">Desempenho Prepararpy Grafico</a>
+    <a href="#imrs-mapaspy-mapa">Imrs Mapaspy Mapa</a>
+    <a href="#tabela-11py-imrs">Tabela 11Py Imrs</a>
+    <a href="#pessoal-se-o-despesa">Pessoal Seção Despesa</a>
+    <a href="#regionalizacao-se-o-regionaliza-o">Regionalizacao Seção Regionalização</a>
+    <a href="#desempenho-se-o-consolidado">Desempenho Seção Consolidado</a>
+    <a href="#exportacao-formata-o-grava-o">Exportacao Formatação Gravação</a>
+    <a href="#other">Other</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>50 nodes</small>")
+    class CLI_SKILLS_9964CBB8 module;
+    SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>115 nodes</small>")
+    class SECURITY_GLOBAL_5B9C6A04 module;
+    DESEMPENHO_PREPARARPY_GRAFICO_B1F97833("Desempenho Prepararpy Grafico<br/><small>49 nodes</small>")
+    class DESEMPENHO_PREPARARPY_GRAFICO_B1F97833 module;
+    IMRS_MAPASPY_MAPA_905BC2A6("Imrs Mapaspy Mapa<br/><small>33 nodes</small>")
+    class IMRS_MAPASPY_MAPA_905BC2A6 module;
+    TABELA_11PY_IMRS_2C3CC5FE("Tabela 11Py Imrs<br/><small>6 nodes</small>")
+    class TABELA_11PY_IMRS_2C3CC5FE module;
+    PESSOAL_SE_O_DESPESA_8347543F("Pessoal Seção Despesa<br/><small>2 nodes</small>")
+    class PESSOAL_SE_O_DESPESA_8347543F module;
+    REGIONALIZACAO_SE_O_REGIONALIZA_O_9AD89914("Regionalizacao Seção Regionalização<br/><small>2 nodes</small>")
+    class REGIONALIZACAO_SE_O_REGIONALIZA_O_9AD89914 module;
+    DESEMPENHO_SE_O_CONSOLIDADO_3763136E("Desempenho Seção Consolidado<br/><small>2 nodes</small>")
+    class DESEMPENHO_SE_O_CONSOLIDADO_3763136E module;
+    EXPORTACAO_FORMATA_O_GRAVA_O_6E8C36BB("Exportacao Formatação Gravação<br/><small>2 nodes</small>")
+    class EXPORTACAO_FORMATA_O_GRAVA_O_6E8C36BB module;
+    OTHER_D0941E68("Other<br/><small>1 nodes</small>")
+    class OTHER_D0941E68 module;
+    DESEMPENHO_PREPARARPY_GRAFICO_B1F97833 -->|calls x30| SECURITY_GLOBAL_5B9C6A04
+    CLI_SKILLS_9964CBB8 -->|imports x17| SECURITY_GLOBAL_5B9C6A04
+    SECURITY_GLOBAL_5B9C6A04 -->|imports x17| DESEMPENHO_PREPARARPY_GRAFICO_B1F97833
+    IMRS_MAPASPY_MAPA_905BC2A6 -->|calls x14| SECURITY_GLOBAL_5B9C6A04
+    SECURITY_GLOBAL_5B9C6A04 -->|calls x10| CLI_SKILLS_9964CBB8
+    SECURITY_GLOBAL_5B9C6A04 -->|imports x10| IMRS_MAPASPY_MAPA_905BC2A6
+    CLI_SKILLS_9964CBB8 -->|imports x5| DESEMPENHO_PREPARARPY_GRAFICO_B1F97833
+    IMRS_MAPASPY_MAPA_905BC2A6 -->|imports x5| DESEMPENHO_PREPARARPY_GRAFICO_B1F97833
+    DESEMPENHO_PREPARARPY_GRAFICO_B1F97833 -->|imports x4| CLI_SKILLS_9964CBB8
+    CLI_SKILLS_9964CBB8 -->|imports x3| IMRS_MAPASPY_MAPA_905BC2A6
+    TABELA_11PY_IMRS_2C3CC5FE -->|calls x3| SECURITY_GLOBAL_5B9C6A04
+    CLI_SKILLS_9964CBB8 -->|imports x2| TABELA_11PY_IMRS_2C3CC5FE
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>CLI &amp; Skill Installers</td><td>50</td><td><code>1</code></td></tr><tr><td>Security &amp; Global Graph</td><td>115</td><td><code>0, 3, 5, 8</code></td></tr><tr><td>Desempenho Prepararpy Grafico</td><td>49</td><td><code>2</code></td></tr><tr><td>Imrs Mapaspy Mapa</td><td>33</td><td><code>4</code></td></tr><tr><td>Tabela 11Py Imrs</td><td>6</td><td><code>6</code></td></tr><tr><td>Pessoal Seção Despesa</td><td>2</td><td><code>10</code></td></tr><tr><td>Regionalizacao Seção Regionalização</td><td>2</td><td><code>11</code></td></tr><tr><td>Desempenho Seção Consolidado</td><td>2</td><td><code>7</code></td></tr><tr><td>Exportacao Formatação Gravação</td><td>2</td><td><code>9</code></td></tr><tr><td>Other</td><td>1</td><td><code>12</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Pessoal Seção Despesa -&gt; CLI &amp; Skill Installers -&gt; Security &amp; Global Graph -&gt; Desempenho Prepararpy Grafico -&gt; Imrs Mapaspy Mapa -&gt; Tabela 11Py Imrs -&gt; Regionalizacao Seção Regionalização</div>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. CLI & Skill Installers ====== -->
+<h2 id="cli-skills">2. CLI &amp; Skill Installers</h2>
+<p>CLI &amp; Skill Installers groups implementation around imrs, tabela, exportacao, gerarpy, mostly in src/imrs/gerar.py, src/imrs/tabela_09.py, src/imrs/tabela_10.py. This section covers 50 nodes and 78 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: CLI &amp; Skill Installers (50 nodes, 78 edges)
+    subgraph cli_skills_src_imrs_gerar_py_aea1ab68["src/imrs/gerar.py"]
+        src_imrs_gerar_60c7e70c("gerar.py")
+        src_imrs_gerar_montar_quadros_a8cb2f83("montar_quadros()<br/><small>src/imrs/gerar.py</small>")
+        src_imrs_gerar_exportar_tabelas_imrs_2b73db84("exportar_tabelas_imrs()<br/><small>src/imrs/gerar.py</small>")
+        src_imrs_gerar_dividir_5a743ea3("_dividir()<br/><small>src/imrs/gerar.py</small>")
+    end
+    subgraph cli_skills_src_exportacao_estilo_py_0b1b50a9["src/exportacao/estilo.py"]
+        src_exportacao_estilo_percentual_254ff203("percentual()<br/><small>src/exportacao/estilo.py</small>")
+        src_exportacao_estilo_numero_br_abdf899a("numero_br()<br/><small>src/exportacao/estilo.py</small>")
+        src_exportacao_estilo_reais_26e1784a("reais()<br/><small>src/exportacao/estilo.py</small>")
+    end
+    subgraph cli_skills_src_exportacao_excel_py_23dd5e08["src/exportacao/excel.py"]
+        src_exportacao_excel_7864f5a2("excel.py")
+        src_exportacao_excel_exportar_excel_653c1bc8("exportar_excel()<br/><small>src/exportacao/excel.py</small>")
+        src_exportacao_excel_formatar_aba_rim_be030b3a("formatar_aba_rim()<br/><small>src/exportacao/excel.py</small>")
+    end
+    subgraph cli_skills_src_exportacao_word_py_85109512["src/exportacao/word.py"]
+        src_exportacao_word_4e561be6("word.py")
+        src_exportacao_word_exportar_word_9fd62e5d("exportar_word()<br/><small>src/exportacao/word.py</small>")
+        src_exportacao_word_tabela_b644d3b2("_tabela()<br/><small>src/exportacao/word.py</small>")
+    end
+    subgraph cli_skills_main_py_9040bb1f["main.py"]
+        main_b28b7af6("main.py")
+        main_main_4d9daec5("main()<br/><small>main.py</small>")
+    end
+    subgraph cli_skills_src_imrs_texto_py_f0a1ea6a["src/imrs/texto.py"]
+        src_imrs_texto_47be6721("texto.py")
+        src_imrs_texto_analisar_d839e6e2("analisar()<br/><small>src/imrs/texto.py</small>")
+    end
+    src_imrs_tabela_09_gerar_tabela_9_74d09a28("gerar_tabela_9()<br/><small>src/imrs/tabela_09.py</small>")
+    main_main_4d9daec5 -->|calls| src_imrs_gerar_montar_quadros_a8cb2f83
+    main_main_4d9daec5 -->|calls| src_imrs_texto_analisar_d839e6e2
+    main_main_4d9daec5 -->|calls| src_imrs_gerar_exportar_tabelas_imrs_2b73db84
+    main_main_4d9daec5 -->|calls| src_exportacao_word_exportar_word_9fd62e5d
+    src_exportacao_estilo_percentual_254ff203 -->|calls| src_exportacao_estilo_numero_br_abdf899a
+    src_exportacao_estilo_reais_26e1784a -->|calls| src_exportacao_estilo_numero_br_abdf899a
+    src_exportacao_excel_exportar_excel_653c1bc8 -->|calls| src_exportacao_excel_formatar_aba_rim_be030b3a
+    src_exportacao_word_exportar_word_9fd62e5d -->|calls| src_exportacao_word_tabela_b644d3b2
+    src_exportacao_word_tabela_b644d3b2 -->|calls| src_exportacao_estilo_percentual_254ff203
+    src_exportacao_word_tabela_b644d3b2 -->|calls| src_exportacao_estilo_numero_br_abdf899a
+    src_imrs_gerar_exportar_tabelas_imrs_2b73db84 -->|calls| src_exportacao_excel_exportar_excel_653c1bc8
+    src_imrs_gerar_montar_quadros_a8cb2f83 -->|calls| src_imrs_gerar_dividir_5a743ea3
+    src_imrs_texto_analisar_d839e6e2 -->|calls| src_exportacao_estilo_reais_26e1784a
+    src_imrs_texto_analisar_d839e6e2 -->|calls| src_exportacao_estilo_percentual_254ff203
+    main_b28b7af6 -->|imports| src_imrs_texto_analisar_d839e6e2
+    main_b28b7af6 -->|imports| src_exportacao_word_exportar_word_9fd62e5d
+    main_b28b7af6 -->|imports| src_imrs_gerar_exportar_tabelas_imrs_2b73db84
+    main_b28b7af6 -->|imports| src_imrs_gerar_montar_quadros_a8cb2f83
+    main_b28b7af6 -->|imports| src_imrs_texto_47be6721
+    main_b28b7af6 -->|imports| src_exportacao_word_4e561be6
+    main_b28b7af6 -->|imports| src_imrs_gerar_60c7e70c
+    src_exportacao_word_4e561be6 -->|imports| src_exportacao_estilo_numero_br_abdf899a
+    src_exportacao_word_4e561be6 -->|imports| src_exportacao_estilo_percentual_254ff203
+    src_imrs_gerar_60c7e70c -->|imports| src_imrs_tabela_09_gerar_tabela_9_74d09a28
+    %% Omitted for readability: 32 nodes, 4 edges
+    class src_imrs_gerar_60c7e70c module;
+    class src_imrs_gerar_montar_quadros_a8cb2f83 function;
+    class src_imrs_gerar_exportar_tabelas_imrs_2b73db84 function;
+    class src_imrs_gerar_dividir_5a743ea3 function;
+    class src_exportacao_estilo_percentual_254ff203 function;
+    class src_exportacao_estilo_numero_br_abdf899a function;
+    class src_exportacao_estilo_reais_26e1784a function;
+    class src_exportacao_excel_7864f5a2 module;
+    class src_exportacao_excel_exportar_excel_653c1bc8 function;
+    class src_exportacao_excel_formatar_aba_rim_be030b3a function;
+    class src_exportacao_word_4e561be6 module;
+    class src_exportacao_word_exportar_word_9fd62e5d function;
+    class src_exportacao_word_tabela_b644d3b2 function;
+    class main_b28b7af6 module;
+    class main_main_4d9daec5 function;
+    class src_imrs_texto_47be6721 module;
+    class src_imrs_texto_analisar_d839e6e2 function;
+    class src_imrs_tabela_09_gerar_tabela_9_74d09a28 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>main()</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>analisar()</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>exportar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br>+5 more</td>
+  <td>main() node in main.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>numero_br()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tabela()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small><br><code>percentual()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>reais()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>numero_br() node in src/exportacao/estilo.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>percentual()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tabela()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small><br><code>analisar()</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br><code>texto.py</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br>+1 more</td>
+  <td><code>numero_br()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td>percentual() node in src/exportacao/estilo.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>reais()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>analisar()</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br><code>texto.py</code><br><small style="color:var(--muted)">src/imrs/texto.py</small></td>
+  <td><code>numero_br()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td>reais() node in src/exportacao/estilo.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>exportar_excel()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>exportar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br>+5 more</td>
+  <td><code>formatar_aba_rim()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>formatar_aba_rim()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>exportar_excel()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>formatar_aba_rim() node in src/exportacao/excel.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>exportar_word()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>_tabela()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>_tabela()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>exportar_word()</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td><code>numero_br()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>pandas</code><br><code>percentual()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td>_tabela() node in src/exportacao/word.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>_dividir()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>montar_quadros()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_dividir() node in src/imrs/gerar.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>exportar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small><br><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>exportar_excel()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>montar_quadros()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>_dividir()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td>montar_quadros() node in src/imrs/gerar.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>_agrupar_programas()</code><br><small style="color:var(--muted)">src/imrs/tabela_09.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_tabela_9()</code><br><small style="color:var(--muted)">src/imrs/tabela_09.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_agrupar_programas() node in src/imrs/tabela_09.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>gerar_tabela_9()</code><br><small style="color:var(--muted)">src/imrs/tabela_09.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>_agrupar_programas()</code><br><small style="color:var(--muted)">src/imrs/tabela_09.py</small></td>
+  <td>gerar_tabela_9() node in src/imrs/tabela_09.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>_agrupar_areas()</code><br><small style="color:var(--muted)">src/imrs/tabela_10.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_tabela_10()</code><br><small style="color:var(--muted)">src/imrs/tabela_10.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_agrupar_areas() node in src/imrs/tabela_10.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>gerar_tabela_10()</code><br><small style="color:var(--muted)">src/imrs/tabela_10.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>_agrupar_areas()</code><br><small style="color:var(--muted)">src/imrs/tabela_10.py</small><br><code>pandas</code></td>
+  <td>gerar_tabela_10() node in src/imrs/tabela_10.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>analisar()</code><br><small style="color:var(--muted)">src/imrs/texto.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>percentual()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>reais()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td>analisar() node in src/imrs/texto.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>analisar()</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br><code>argparse</code><br><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+14 more</td>
+  <td>Module file in main.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>estilo.py</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>excel.py</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small><br><code>texto.py</code><br><small style="color:var(--muted)">src/imrs/texto.py</small><br><code>word.py</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/exportacao/estilo.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>excel.py</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br>+1 more</td>
+  <td><code>estilo.py</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>openpyxl_styles</code><br><code>openpyxl_utils</code><br>+1 more</td>
+  <td>Module file in src/exportacao/excel.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>word.py</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>docx</code><br><code>docx_enum_text</code><br><code>docx_oxml</code><br>+6 more</td>
+  <td>Module file in src/exportacao/word.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>imrs/gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>calcular pesos populacionais()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>calcular_valores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>classificar_areas()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+11 more</td>
+  <td>Module file in src/imrs/gerar.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>tabela_09.py</code><br><small style="color:var(--muted)">src/imrs/tabela_09.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/imrs/tabela_09.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>tabela_10.py</code><br><small style="color:var(--muted)">src/imrs/tabela_10.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>pandas</code><br><code>preparar_imrs.py</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td>Module file in src/imrs/tabela_10.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>texto.py</code><br><small style="color:var(--muted)">src/imrs/texto.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>estilo.py</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>percentual()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small><br><code>reais()</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td>Module file in src/imrs/texto.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Execução principal das rotinas de monitoramento do PPAG.</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Execução principal das rotinas de monitoramento do PPAG..</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Gera os produtos do IMRS e registra os DataFrames utilizados no cálculo.</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gera os produtos do IMRS e registra os DataFrames utilizados no cálculo..</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Cores, créditos e formatação numérica dos relatórios do RIM.</code><br><small style="color:var(--muted)">src/exportacao/estilo.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Cores, créditos e formatação numérica dos relatórios do RIM..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Funções de exportação dos resultados do monitoramento.</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Funções de exportação dos resultados do monitoramento..</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Exporta um conjunto de DataFrames para um arquivo Excel. tabelas deve ser um…</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Exporta um conjunto de DataFrames para um arquivo Excel. tabelas deve ser um….</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Exporta as tabelas editáveis e o texto da seção do IMRS para Word.</code><br><small style="color:var(--muted)">src/exportacao/word.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Exporta as tabelas editáveis e o texto da seção do IMRS para Word..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/imrs/gerar.py</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/imrs/tabela_09.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/imrs/tabela_10.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/exportacao/estilo.py</code></td><td>5 nodes</td></tr>
+<tr><td><code>src/exportacao/excel.py</code></td><td>5 nodes</td></tr>
+<tr><td><code>main.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/exportacao/word.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/imrs/texto.py</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x18, explains x17, calls x16, contains x16. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Security & Global Graph ====== -->
+<h2 id="security-global">3. Security &amp; Global Graph</h2>
+<p>Security &amp; Global Graph groups implementation around regionalizacao, tabela, global, preparar, mostly in src/imrs/preparar_imrs.py, src/preparar.py, src/regionalizacao/preparar_regionalizacao.py. This section covers 115 nodes and 268 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Security &amp; Global Graph (115 nodes, 268 edges)
+    subgraph security_global_src_imrs_preparar_imrs_py_be010309["src/imrs/preparar_imrs.py"]
+        src_imrs_preparar_imrs_5eda2014("preparar_imrs.py")
+        src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e("selecionar_menores_imrs()<br/><small>src/imrs/preparar_imrs.py</small>")
+        src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68("calcular pesos populacionais()<br/><small>src/imrs/preparar_imrs.py</small>")
+        src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487("calcular_valores_imrs()<br/><small>src/imrs/preparar_imrs.py</small>")
+        src_imrs_preparar_imrs_classificar_areas_afd93fdd("classificar_areas()<br/><small>src/imrs/preparar_imrs.py</small>")
+    end
+    subgraph security_global_src_preparar_py_c02fe44f["src/preparar.py"]
+        src_preparar_carregar_txt_60ec77cd("carregar_txt()<br/><small>src/preparar.py</small>")
+        src_preparar_validar_periodo_monitoramento_61fa2082("validar periodo monitoramento()<br/><small>src/preparar.py</small>")
+        src_preparar_codigo_texto_3c38b0b6("codigo_texto()<br/><small>src/preparar.py</small>")
+        src_preparar_numero_decimal_0ce4064c("numero_decimal()<br/><small>src/preparar.py</small>")
+    end
+    subgraph security_global_External_generated_3fe5b8bb["External / generated"]
+        numpy_a65e1d38("numpy")
+        pandas_add564b5("pandas")
+    end
+    subgraph security_global_src_regionalizacao_gerar_py_92305874["src/regionalizacao/gerar.py"]
+        src_regionalizacao_gerar_9bcaea69("gerar.py")
+        src_regionalizacao_gerar_gerar_regionalizacao_1461bb2b("gerar_regionalizacao()<br/><small>src/regionalizacao/gerar.py</small>")
+    end
+    src_execucao_global_gerar_675e671f("gerar.py")
+    src_execucao_global_preparar_global_carregar_aco_088c38e4("carregar_acoes_global()<br/><small>src/execucao_global/preparar_global.py</small>")
+    src_execucao_global_tabela_03_e5198bdf("tabela_03.py")
+    src_imrs_init_71fd93f4("__init__.py")
+    src_imrs_gerar_gerar_tabelas_imrs_beeea035("gerar_tabelas_imrs()<br/><small>src/imrs/gerar.py</small>")
+    src_execucao_global_preparar_global_carregar_aco_088c38e4 -->|calls| src_preparar_carregar_txt_60ec77cd
+    src_execucao_global_preparar_global_carregar_aco_088c38e4 -->|calls| src_preparar_validar_periodo_monitoramento_61fa2082
+    src_execucao_global_preparar_global_carregar_aco_088c38e4 -->|calls| src_preparar_codigo_texto_3c38b0b6
+    src_execucao_global_preparar_global_carregar_aco_088c38e4 -->|calls| src_preparar_numero_decimal_0ce4064c
+    src_execucao_global_preparar_global_carregar_aco_088c38e4 -->|calls| numpy_a65e1d38
+    src_imrs_gerar_gerar_tabelas_imrs_beeea035 -->|calls| src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e
+    src_imrs_gerar_gerar_tabelas_imrs_beeea035 -->|calls| src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68
+    src_imrs_gerar_gerar_tabelas_imrs_beeea035 -->|calls| src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487
+    src_imrs_gerar_gerar_tabelas_imrs_beeea035 -->|calls| src_imrs_preparar_imrs_classificar_areas_afd93fdd
+    src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68 -->|calls| src_preparar_codigo_texto_3c38b0b6
+    src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68 -->|calls| pandas_add564b5
+    src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68 -->|calls| numpy_a65e1d38
+    src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487 -->|calls| src_preparar_codigo_texto_3c38b0b6
+    src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487 -->|calls| pandas_add564b5
+    src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487 -->|calls| numpy_a65e1d38
+    src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e -->|calls| src_preparar_codigo_texto_3c38b0b6
+    src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e -->|calls| pandas_add564b5
+    src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e -->|calls| numpy_a65e1d38
+    src_preparar_carregar_txt_60ec77cd -->|calls| pandas_add564b5
+    src_preparar_numero_decimal_0ce4064c -->|calls| pandas_add564b5
+    src_preparar_validar_periodo_monitoramento_61fa2082 -->|calls| pandas_add564b5
+    src_regionalizacao_gerar_gerar_regionalizacao_1461bb2b -->|calls| src_execucao_global_preparar_global_carregar_aco_088c38e4
+    src_imrs_init_71fd93f4 -->|imports| src_imrs_gerar_gerar_tabelas_imrs_beeea035
+    src_imrs_init_71fd93f4 -->|imports| src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68
+    %% Omitted for readability: 97 nodes, 14 edges
+    class src_imrs_preparar_imrs_5eda2014 module;
+    class src_imrs_preparar_imrs_selecionar_menores_imrs_e938c16e function;
+    class src_imrs_preparar_imrs_calcular_pesos_populacion_e2a1ea68 function;
+    class src_imrs_preparar_imrs_calcular_valores_imrs_ab1b8487 function;
+    class src_imrs_preparar_imrs_classificar_areas_afd93fdd function;
+    class src_preparar_carregar_txt_60ec77cd function;
+    class src_preparar_validar_periodo_monitoramento_61fa2082 function;
+    class src_preparar_codigo_texto_3c38b0b6 function;
+    class src_preparar_numero_decimal_0ce4064c function;
+    class numpy_a65e1d38 function;
+    class pandas_add564b5 function;
+    class src_regionalizacao_gerar_9bcaea69 module;
+    class src_regionalizacao_gerar_gerar_regionalizacao_1461bb2b function;
+    class src_execucao_global_gerar_675e671f module;
+    class src_execucao_global_preparar_global_carregar_aco_088c38e4 function;
+    class src_execucao_global_tabela_03_e5198bdf module;
+    class src_imrs_init_71fd93f4 module;
+    class src_imrs_gerar_gerar_tabelas_imrs_beeea035 function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>carregar_acoes_global()</code><br><small style="color:var(--muted)">src/execucao_global/preparar_global.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar_global()</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br>+1 more</td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numero_decimal()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+2 more</td>
+  <td>carregar_acoes_global() node in src/execucao_global/preparar_global.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small><br><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>calcular pesos populacionais()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>calcular_valores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>classificar_areas()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+4 more</td>
+  <td>gerar_tabelas_imrs() node in src/imrs/gerar.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>calcular_pesos_populacionais()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numpy</code><br><code>pandas</code></td>
+  <td>calcular_pesos_populacionais() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>calcular_valores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numpy</code><br><code>pandas</code></td>
+  <td>calcular_valores_imrs() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>_ler_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>_padronizar_areas()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+1 more</td>
+  <td>carregar_bases_imrs() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>carregar_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar bases regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small><br><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>preparar_regionalizacao.py</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td><code>_ler_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td>carregar_populacao() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>classificar_areas()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>classificar_areas() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>_ler_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><code>carregar_excel()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numero_decimal()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>pandas</code></td>
+  <td>_ler_imrs() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar bases regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small><br><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>preparar_regionalizacao.py</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numero_decimal()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+1 more</td>
+  <td>_ler_localizadores() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>_ler_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><code>carregar_excel()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numero_decimal()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>pandas</code></td>
+  <td>_ler_populacao() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>_padronizar_areas()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar_bases_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><code>pandas</code></td>
+  <td>_padronizar_areas() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>selecionar_menores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>numpy</code><br><code>pandas</code></td>
+  <td>selecionar_menores_imrs() node in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>carregar_excel()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_ler_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>_ler_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>converter_para_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+1 more</td>
+  <td><code>pandas</code></td>
+  <td>carregar_excel() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar bases regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small><br><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br>+6 more</td>
+  <td><code>pandas</code></td>
+  <td>carregar_txt() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>calcular pesos populacionais()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>calcular_valores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+13 more</td>
+  <td>No direct outbound edge</td>
+  <td>codigo_texto() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>numero_decimal()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_ler_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>_ler_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br>+5 more</td>
+  <td><code>pandas</code></td>
+  <td>numero_decimal() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>validar_periodo_monitoramento()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br><code>carregar_acoes_global()</code><br><small style="color:var(--muted)">src/execucao_global/preparar_global.py</small><br>+3 more</td>
+  <td><code>pandas</code></td>
+  <td>validar_periodo_monitoramento() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>apropriar_regioes()</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar_regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small></td>
+  <td><code>numpy</code></td>
+  <td>apropriar_regioes() node in src/regionalizacao/preparar_regionalizacao.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>carregar_bases_regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar_regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small></td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+2 more</td>
+  <td>carregar_bases_regionalizacao() node in src/regionalizacao/preparar_regionalizacao.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>gerar_tabela_8()</code><br><small style="color:var(--muted)">src/regionalizacao/tabela_08.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar_regionalizacao()</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small></td>
+  <td><code>pandas</code></td>
+  <td>gerar_tabela_8() node in src/regionalizacao/tabela_08.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>preparar_global.py</code><br><small style="color:var(--muted)">src/execucao_global/preparar_global.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>calculos.py</code><br><small style="color:var(--muted)">src/execucao_global/calculos.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br>+1 more</td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br>+5 more</td>
+  <td>Module file in src/execucao_global/preparar_global.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>imrs/__init__.py</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>calcular pesos populacionais()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>calcular_valores_imrs()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>exportar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br>+2 more</td>
+  <td>Module file in src/imrs/__init__.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>preparar_imrs.py</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small><br>+3 more</td>
+  <td><code>carregar_excel()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+6 more</td>
+  <td>Module file in src/imrs/preparar_imrs.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>preparar_regionalizacao.py</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>tabela_07.py</code><br><small style="color:var(--muted)">src/regionalizacao/tabela_07.py</small><br>+1 more</td>
+  <td><code>_ler_localizadores()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar_populacao()</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small><br><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+6 more</td>
+  <td>Module file in src/regionalizacao/preparar_regionalizacao.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>tabela_08.py</code><br><small style="color:var(--muted)">src/regionalizacao/tabela_08.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small></td>
+  <td><code>pandas</code><br><code>preparar_regionalizacao.py</code><br><small style="color:var(--muted)">src/regionalizacao/preparar_regionalizacao.py</small></td>
+  <td>Module file in src/regionalizacao/tabela_08.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Lê as ações e identifica os quatro agrupamentos da Execução Global.</code><br><small style="color:var(--muted)">src/execucao_global/preparar_global.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Lê as ações e identifica os quatro agrupamentos da Execução Global..</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Retorna uma linha por UO e ação do período, incluindo execução sem LOA.</code><br><small style="color:var(--muted)">src/execucao_global/preparar_global.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Retorna uma linha por UO e ação do período, incluindo execução sem LOA..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Devolve as tabelas e a memória municipal. Pode registrar as etapas em um…</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Devolve as tabelas e a memória municipal. Pode registrar as etapas em um….</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Demonstrativos do Índice Mineiro de Responsabilidade Social.</code><br><small style="color:var(--muted)">src/imrs/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Demonstrativos do Índice Mineiro de Responsabilidade Social..</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Bases do IMRS, recorte dos 50 municípios e rateio territorial.</code><br><small style="color:var(--muted)">src/imrs/preparar_imrs.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Bases do IMRS, recorte dos 50 municípios e rateio territorial..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/imrs/preparar_imrs.py</code></td><td>22 nodes</td></tr>
+<tr><td><code>src/preparar.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>src/execucao_global/calculos.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/regionalizacao/cartografia.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/regionalizacao/preparar_regionalizacao.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/execucao_global/gerar.py</code></td><td>5 nodes</td></tr>
+<tr><td><code>src/execucao_global/preparar_global.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/regionalizacao/tabela_07.py</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x82, imports x64, explains x49, imports x34. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Desempenho Prepararpy Grafico ====== -->
+<h2 id="desempenho-prepararpy-grafico">4. Desempenho Prepararpy Grafico</h2>
+<p>Desempenho Prepararpy Grafico groups implementation around desempenho, prepararpy, grafico, tabela, mostly in src/preparar.py, src/desempenho/grafico_01.py, src/desempenho/preparar_desempenho.py. This section covers 49 nodes and 81 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Desempenho Prepararpy Grafico (49 nodes, 81 edges)
+    subgraph desempenho_prepararpy_grafico_src_preparar_py_8d892dd8["src/preparar.py"]
+        src_preparar_5e99f5e0("preparar.py")
+        src_preparar_salvar_bases_processadas_e0f482cf("salvar_bases_processadas()<br/><small>src/preparar.py</small>")
+        src_preparar_converter_bases_raw_66f352bd("converter_bases_raw()<br/><small>src/preparar.py</small>")
+        src_preparar_converter_para_parquet_7776f79f("converter_para_parquet()<br/><small>src/preparar.py</small>")
+        src_preparar_gravar_parquet_7028e9ae("gravar_parquet()<br/><small>src/preparar.py</small>")
+    end
+    subgraph desempenho_prepararpy_grafico_src_desempenho_ger_d3890f66["src/desempenho/gerar.py"]
+        src_desempenho_gerar_45e51934("gerar.py")
+        src_desempenho_gerar_gerar_desempenho_674d8413("gerar_desempenho()<br/><small>src/desempenho/gerar.py</small>")
+    end
+    subgraph desempenho_prepararpy_grafico_src_desempenho_gra_7750437c["src/desempenho/grafico_01.py"]
+        src_desempenho_grafico_01_gerar_grafico_1_401db940("gerar_grafico_1()<br/><small>src/desempenho/grafico_01.py</small>")
+        src_desempenho_grafico_01_desenhar_colunas_48b76509("desenhar_colunas()<br/><small>src/desempenho/grafico_01.py</small>")
+    end
+    subgraph desempenho_prepararpy_grafico_src_desempenho_gra_95304327["src/desempenho/grafico_02.py"]
+        src_desempenho_grafico_02_a1246de3("grafico_02.py")
+        src_desempenho_grafico_02_gerar_grafico_2_835e766c("gerar_grafico_2()<br/><small>src/desempenho/grafico_02.py</small>")
+    end
+    subgraph desempenho_prepararpy_grafico_src_desempenho_pre_00ede294["src/desempenho/preparar_desempenho.py"]
+        src_desempenho_preparar_desempenho_carregar_acoe_0ec2886c("carregar_acoes_desempenho()<br/><small>src/desempenho/preparar_desempenho.py</small>")
+        src_desempenho_preparar_desempenho_classificar_d_bf69efeb("classificar_desempenho()<br/><small>src/desempenho/preparar_desempenho.py</small>")
+    end
+    subgraph desempenho_prepararpy_grafico_src_desempenho_tab_7fafadb4["src/desempenho/tabela_06.py"]
+        src_desempenho_tabela_06_8a604c22("tabela_06.py")
+        src_desempenho_tabela_06_gerar_tabela_6_1faf175e("gerar_tabela_6()<br/><small>src/desempenho/tabela_06.py</small>")
+    end
+    src_config_f55793b8("config.py")
+    src_desempenho_tabela_05_gerar_tabela_5_2b38e4f9("gerar_tabela_5()<br/><small>src/desempenho/tabela_05.py</small>")
+    src_preparar_dados_9f9722f8("preparar_dados.py")
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_desempenho_preparar_desempenho_carregar_acoe_0ec2886c
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_desempenho_tabela_05_gerar_tabela_5_2b38e4f9
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_desempenho_tabela_06_gerar_tabela_6_1faf175e
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_desempenho_grafico_01_gerar_grafico_1_401db940
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_desempenho_grafico_02_gerar_grafico_2_835e766c
+    src_desempenho_gerar_gerar_desempenho_674d8413 -->|calls| src_preparar_salvar_bases_processadas_e0f482cf
+    src_desempenho_grafico_01_gerar_grafico_1_401db940 -->|calls| src_desempenho_grafico_01_desenhar_colunas_48b76509
+    src_desempenho_grafico_02_gerar_grafico_2_835e766c -->|calls| src_desempenho_grafico_01_desenhar_colunas_48b76509
+    src_desempenho_preparar_desempenho_carregar_acoe_0ec2886c -->|calls| src_desempenho_preparar_desempenho_classificar_d_bf69efeb
+    src_desempenho_tabela_06_gerar_tabela_6_1faf175e -->|calls| src_desempenho_tabela_05_gerar_tabela_5_2b38e4f9
+    src_preparar_converter_bases_raw_66f352bd -->|calls| src_preparar_converter_para_parquet_7776f79f
+    src_preparar_converter_para_parquet_7776f79f -->|calls| src_preparar_gravar_parquet_7028e9ae
+    src_preparar_salvar_bases_processadas_e0f482cf -->|calls| src_preparar_gravar_parquet_7028e9ae
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_tabela_05_gerar_tabela_5_2b38e4f9
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_tabela_06_gerar_tabela_6_1faf175e
+    src_desempenho_gerar_45e51934 -->|imports| src_preparar_salvar_bases_processadas_e0f482cf
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_grafico_01_gerar_grafico_1_401db940
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_grafico_02_gerar_grafico_2_835e766c
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_preparar_desempenho_carregar_acoe_0ec2886c
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_tabela_06_8a604c22
+    src_desempenho_gerar_45e51934 -->|imports| src_preparar_5e99f5e0
+    src_desempenho_gerar_45e51934 -->|imports| src_config_f55793b8
+    src_desempenho_gerar_45e51934 -->|imports| src_desempenho_grafico_02_a1246de3
+    src_desempenho_grafico_02_a1246de3 -->|imports| src_desempenho_grafico_01_desenhar_colunas_48b76509
+    %% Omitted for readability: 31 nodes, 4 edges
+    class src_preparar_5e99f5e0 module;
+    class src_preparar_salvar_bases_processadas_e0f482cf function;
+    class src_preparar_converter_bases_raw_66f352bd function;
+    class src_preparar_converter_para_parquet_7776f79f function;
+    class src_preparar_gravar_parquet_7028e9ae function;
+    class src_desempenho_gerar_45e51934 module;
+    class src_desempenho_gerar_gerar_desempenho_674d8413 function;
+    class src_desempenho_grafico_01_gerar_grafico_1_401db940 function;
+    class src_desempenho_grafico_01_desenhar_colunas_48b76509 function;
+    class src_desempenho_grafico_02_a1246de3 module;
+    class src_desempenho_grafico_02_gerar_grafico_2_835e766c function;
+    class src_desempenho_preparar_desempenho_carregar_acoe_0ec2886c function;
+    class src_desempenho_preparar_desempenho_classificar_d_bf69efeb function;
+    class src_desempenho_tabela_06_8a604c22 module;
+    class src_desempenho_tabela_06_gerar_tabela_6_1faf175e function;
+    class src_config_f55793b8 module;
+    class src_desempenho_tabela_05_gerar_tabela_5_2b38e4f9 function;
+    class src_preparar_dados_9f9722f8 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br><code>exportar_excel()</code><br><small style="color:var(--muted)">src/exportacao/excel.py</small><br><code>gerar_grafico_1()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br>+4 more</td>
+  <td>gerar_desempenho() node in src/desempenho/gerar.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>desenhar_colunas()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_grafico_1()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>gerar_grafico_2()</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small><br><code>grafico_02.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small></td>
+  <td><code>numpy</code></td>
+  <td>desenhar_colunas() node in src/desempenho/grafico_01.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>gerar_grafico_1()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>desenhar_colunas()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>pandas</code></td>
+  <td>gerar_grafico_1() node in src/desempenho/grafico_01.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>gerar_grafico_2()</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>desenhar_colunas()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>pandas</code></td>
+  <td>gerar_grafico_2() node in src/desempenho/grafico_02.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>classificar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br>+3 more</td>
+  <td>carregar_acoes_desempenho() node in src/desempenho/preparar_desempenho.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>classificar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small></td>
+  <td><code>pandas</code></td>
+  <td>classificar_desempenho() node in src/desempenho/preparar_desempenho.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>gerar_tabela_5()</code><br><small style="color:var(--muted)">src/desempenho/tabela_05.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_tabela_6()</code><br><small style="color:var(--muted)">src/desempenho/tabela_06.py</small><br>+1 more</td>
+  <td><code>pandas</code></td>
+  <td>gerar_tabela_5() node in src/desempenho/tabela_05.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>gerar_tabela_6()</code><br><small style="color:var(--muted)">src/desempenho/tabela_06.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>gerar_tabela_5()</code><br><small style="color:var(--muted)">src/desempenho/tabela_05.py</small></td>
+  <td>gerar_tabela_6() node in src/desempenho/tabela_06.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>carregar_csv()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>pandas</code></td>
+  <td>carregar_csv() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>converter_bases_raw()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>preparar_dados.py</code><br><small style="color:var(--muted)">src/preparar_dados.py</small></td>
+  <td><code>converter_para_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td>converter_bases_raw() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>converter_para_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>converter_bases_raw()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><code>carregar_excel()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>gravar_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td>converter_para_parquet() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>gravar_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>converter_para_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>salvar_bases_processadas()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>gravar_parquet() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>padronizar_colunas()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>padronizar_colunas() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>salvar_bases_processadas()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br>+5 more</td>
+  <td><code>gravar_parquet()</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td>salvar_bases_processadas() node in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/execucao_global/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br>+8 more</td>
+  <td><code>pathlib</code></td>
+  <td>Module file in src/config.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>desempenho/gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>argparse</code><br><code>carregar_acoes_desempenho()</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br>+14 more</td>
+  <td>Module file in src/desempenho/gerar.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>grafico_01.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>grafico_02.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small></td>
+  <td><code>matplotlib_figure</code><br><code>matplotlib_ticker</code><br><code>numpy</code><br>+2 more</td>
+  <td>Module file in src/desempenho/grafico_01.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>grafico_02.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>desenhar_colunas()</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>grafico_01.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>pandas</code><br>+1 more</td>
+  <td>Module file in src/desempenho/grafico_02.py.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>preparar_desempenho.py</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>grafico_01.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small><br><code>grafico_02.py</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small><br>+2 more</td>
+  <td><code>carregar_txt()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br>+5 more</td>
+  <td>Module file in src/desempenho/preparar_desempenho.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>tabela_05.py</code><br><small style="color:var(--muted)">src/desempenho/tabela_05.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br><code>tabela_06.py</code><br><small style="color:var(--muted)">src/desempenho/tabela_06.py</small></td>
+  <td><code>pandas</code><br><code>preparar_desempenho.py</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small></td>
+  <td>Module file in src/desempenho/tabela_05.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>tabela_06.py</code><br><small style="color:var(--muted)">src/desempenho/tabela_06.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><code>gerar_tabela_5()</code><br><small style="color:var(--muted)">src/desempenho/tabela_05.py</small><br><code>preparar_desempenho.py</code><br><small style="color:var(--muted)">src/desempenho/preparar_desempenho.py</small><br><code>tabela_05.py</code><br><small style="color:var(--muted)">src/desempenho/tabela_05.py</small></td>
+  <td>Module file in src/desempenho/tabela_06.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>preparar.py</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small><br>+8 more</td>
+  <td><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br><code>datetime</code><br><code>pandas</code><br>+2 more</td>
+  <td>Module file in src/preparar.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>preparar_dados.py</code><br><small style="color:var(--muted)">src/preparar_dados.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>converter_bases_raw()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>preparar.py</code><br><small style="color:var(--muted)">src/preparar.py</small></td>
+  <td>Module file in src/preparar_dados.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Configurações gerais do projeto.</code><br><small style="color:var(--muted)">src/config.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Configurações gerais do projeto..</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Executa os quatro componentes de Desempenho Consolidado do RIM.</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Executa os quatro componentes de Desempenho Consolidado do RIM..</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Lê os TXT, calcula as tabelas, confere e exporta Excel, PNG e memória.</code><br><small style="color:var(--muted)">src/desempenho/gerar.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Lê os TXT, calcula as tabelas, confere e exporta Excel, PNG e memória..</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Gráfico 1 — percentuais das ações válidas com programação no período.</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gráfico 1 — percentuais das ações válidas com programação no período..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Exporta colunas agrupadas, recebendo percentuais em frações.</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Exporta colunas agrupadas, recebendo percentuais em frações..</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Devolve os dados do gráfico e grava seu PNG.</code><br><small style="color:var(--muted)">src/desempenho/grafico_01.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Devolve os dados do gráfico e grava seu PNG..</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Gráfico 2 — desempenho com programação, separado por IAG e dimensão.</code><br><small style="color:var(--muted)">src/desempenho/grafico_02.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gráfico 2 — desempenho com programação, separado por IAG e dimensão..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/preparar.py</code></td><td>14 nodes</td></tr>
+<tr><td><code>src/desempenho/grafico_01.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/desempenho/preparar_desempenho.py</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/desempenho/gerar.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/desempenho/grafico_02.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/desempenho/tabela_05.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/desempenho/tabela_06.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/config.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x23, imports x22, contains x14, calls x13. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Imrs Mapaspy Mapa ====== -->
+<h2 id="imrs-mapaspy-mapa">5. Imrs Mapaspy Mapa</h2>
+<p>Imrs Mapaspy Mapa groups implementation around imrs, mapaspy, mapa, preparar, mostly in src/imrs/cartografia.py, src/preparar_mapas.py, src/imrs/mapas.py. This section covers 33 nodes and 56 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Imrs Mapaspy Mapa (33 nodes, 56 edges)
+    subgraph imrs_mapaspy_mapa_src_imrs_cartografia_py_021aea40["src/imrs/cartografia.py"]
+        src_imrs_cartografia_preparar_mapa_578fcf8c("preparar_mapa()<br/><small>src/imrs/cartografia.py</small>")
+        src_imrs_cartografia_desenhar_mapa_637e7e71("desenhar_mapa()<br/><small>src/imrs/cartografia.py</small>")
+        src_imrs_cartografia_ler_tabela_11_76a5fae2("ler_tabela_11()<br/><small>src/imrs/cartografia.py</small>")
+        src_imrs_cartografia_5a68bdb3("cartografia.py")
+    end
+    subgraph imrs_mapaspy_mapa_src_imrs_mapas_py_7792f5f8["src/imrs/mapas.py"]
+        src_imrs_mapas_981d1623("mapas.py")
+        src_imrs_mapas_gerar_mapas_tabela_09ba381d("gerar_mapas_tabela()<br/><small>src/imrs/mapas.py</small>")
+        src_imrs_mapas_main_5c2a4e37("main()<br/><small>src/imrs/mapas.py</small>")
+        src_imrs_mapas_gerar_mapas_cc9af113("gerar_mapas()<br/><small>src/imrs/mapas.py</small>")
+    end
+    subgraph imrs_mapaspy_mapa_src_preparar_mapas_py_cf0a84c1["src/preparar_mapas.py"]
+        src_preparar_mapas_carregar_malha_municipal_7d1e1a0a("carregar_malha_municipal()<br/><small>src/preparar_mapas.py</small>")
+        src_preparar_mapas_juntar_dados_territoriais_61b73ce0("juntar_dados_territoriais()<br/><small>src/preparar_mapas.py</small>")
+        src_preparar_mapas_montar_malha_regional_4f823fbc("montar_malha_regional()<br/><small>src/preparar_mapas.py</small>")
+        src_preparar_mapas_59a6ec25("preparar_mapas.py")
+    end
+    subgraph imrs_mapaspy_mapa_External_generated_4cbaeac9["External / generated"]
+        argparse_e750ee7c("argparse")
+        geopandas_33849ba0("geopandas")
+    end
+    subgraph imrs_mapaspy_mapa_src_imrs_mapa_06_py_b22f6034["src/imrs/mapa_06.py"]
+        src_imrs_mapa_06_94384f1b("mapa_06.py")
+        src_imrs_mapa_06_gerar_mapa_06_2eda0e62("gerar_mapa_06()<br/><small>src/imrs/mapa_06.py</small>")
+    end
+    subgraph imrs_mapaspy_mapa_src_imrs_mapa_07_py_6df525a1["src/imrs/mapa_07.py"]
+        src_imrs_mapa_07_40893eb6("mapa_07.py")
+        src_imrs_mapa_07_gerar_mapa_07_14327fbd("gerar_mapa_07()<br/><small>src/imrs/mapa_07.py</small>")
+    end
+    src_imrs_cartografia_preparar_mapa_578fcf8c -->|calls| src_preparar_mapas_carregar_malha_municipal_7d1e1a0a
+    src_imrs_cartografia_preparar_mapa_578fcf8c -->|calls| src_preparar_mapas_juntar_dados_territoriais_61b73ce0
+    src_imrs_mapa_06_gerar_mapa_06_2eda0e62 -->|calls| src_imrs_cartografia_desenhar_mapa_637e7e71
+    src_imrs_mapa_07_gerar_mapa_07_14327fbd -->|calls| src_imrs_cartografia_desenhar_mapa_637e7e71
+    src_imrs_mapas_gerar_mapas_cc9af113 -->|calls| src_imrs_cartografia_ler_tabela_11_76a5fae2
+    src_imrs_mapas_gerar_mapas_cc9af113 -->|calls| src_imrs_mapas_gerar_mapas_tabela_09ba381d
+    src_imrs_mapas_gerar_mapas_tabela_09ba381d -->|calls| src_imrs_cartografia_preparar_mapa_578fcf8c
+    src_imrs_mapas_gerar_mapas_tabela_09ba381d -->|calls| src_imrs_mapa_06_gerar_mapa_06_2eda0e62
+    src_imrs_mapas_gerar_mapas_tabela_09ba381d -->|calls| src_imrs_mapa_07_gerar_mapa_07_14327fbd
+    src_imrs_mapas_main_5c2a4e37 -->|calls| argparse_e750ee7c
+    src_imrs_mapas_main_5c2a4e37 -->|calls| src_imrs_mapas_gerar_mapas_cc9af113
+    src_preparar_mapas_carregar_malha_municipal_7d1e1a0a -->|calls| geopandas_33849ba0
+    src_preparar_mapas_montar_malha_regional_4f823fbc -->|calls| src_preparar_mapas_juntar_dados_territoriais_61b73ce0
+    src_imrs_cartografia_5a68bdb3 -->|imports| src_preparar_mapas_carregar_malha_municipal_7d1e1a0a
+    src_imrs_cartografia_5a68bdb3 -->|imports| src_preparar_mapas_juntar_dados_territoriais_61b73ce0
+    src_imrs_cartografia_5a68bdb3 -->|imports| src_preparar_mapas_59a6ec25
+    src_imrs_mapa_06_94384f1b -->|imports| src_imrs_cartografia_desenhar_mapa_637e7e71
+    src_imrs_mapa_06_94384f1b -->|imports| src_imrs_cartografia_5a68bdb3
+    src_imrs_mapa_07_40893eb6 -->|imports| src_imrs_cartografia_desenhar_mapa_637e7e71
+    src_imrs_mapa_07_40893eb6 -->|imports| src_imrs_cartografia_5a68bdb3
+    src_imrs_mapas_981d1623 -->|imports| argparse_e750ee7c
+    src_imrs_mapas_981d1623 -->|imports| src_imrs_cartografia_ler_tabela_11_76a5fae2
+    src_imrs_mapas_981d1623 -->|imports| src_imrs_cartografia_preparar_mapa_578fcf8c
+    src_imrs_mapas_981d1623 -->|imports| src_imrs_mapa_06_gerar_mapa_06_2eda0e62
+    %% Omitted for readability: 15 nodes, 6 edges
+    class src_imrs_cartografia_preparar_mapa_578fcf8c function;
+    class src_imrs_cartografia_desenhar_mapa_637e7e71 function;
+    class src_imrs_cartografia_ler_tabela_11_76a5fae2 function;
+    class src_imrs_cartografia_5a68bdb3 module;
+    class src_imrs_mapas_981d1623 module;
+    class src_imrs_mapas_gerar_mapas_tabela_09ba381d function;
+    class src_imrs_mapas_main_5c2a4e37 function;
+    class src_imrs_mapas_gerar_mapas_cc9af113 function;
+    class src_preparar_mapas_carregar_malha_municipal_7d1e1a0a function;
+    class src_preparar_mapas_juntar_dados_territoriais_61b73ce0 function;
+    class src_preparar_mapas_montar_malha_regional_4f823fbc function;
+    class src_preparar_mapas_59a6ec25 module;
+    class argparse_e750ee7c function;
+    class geopandas_33849ba0 function;
+    class src_imrs_mapa_06_94384f1b module;
+    class src_imrs_mapa_06_gerar_mapa_06_2eda0e62 function;
+    class src_imrs_mapa_07_40893eb6 module;
+    class src_imrs_mapa_07_gerar_mapa_07_14327fbd function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>desenhar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapa_06()</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small><br><code>gerar_mapa_07()</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small><br><code>mapa_06.py</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>desenhar_mapa() node in src/imrs/cartografia.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ler_tabela_11()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapas()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>pandas</code></td>
+  <td>ler_tabela_11() node in src/imrs/cartografia.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>preparar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapas_tabela()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>carregar_malha_municipal()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>juntar_dados_territoriais()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small><br>+2 more</td>
+  <td>preparar_mapa() node in src/imrs/cartografia.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>gerar_mapa_06()</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapas_tabela()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>desenhar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>gerar_mapa_06() node in src/imrs/mapa_06.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>gerar_mapa_07()</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapas_tabela()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>desenhar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>gerar_mapa_07() node in src/imrs/mapa_07.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>gerar_mapas()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>gerar_mapas_tabela()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>ler_tabela_11()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>gerar_mapas() node in src/imrs/mapas.py.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>gerar_mapas_tabela()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_mapas()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small><br><code>main()</code><br><small style="color:var(--muted)">main.py</small><br><code>main.py</code><br><small style="color:var(--muted)">main.py</small></td>
+  <td><code>gerar_mapa_06()</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small><br><code>gerar_mapa_07()</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small><br><code>preparar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>gerar_mapas_tabela() node in src/imrs/mapas.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>main()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>argparse</code><br><code>gerar_mapas()</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td>main() node in src/imrs/mapas.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>carregar_malha_municipal()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>preparar_geometrias()</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br>+1 more</td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>geopandas</code></td>
+  <td>carregar_malha_municipal() node in src/preparar_mapas.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>juntar_dados_territoriais()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>desenhar_indicador()</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>juntar_dados_territoriais() node in src/preparar_mapas.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>montar_malha_regional()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br><code>preparar_geometrias()</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small></td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>juntar_dados_territoriais()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td>montar_malha_regional() node in src/preparar_mapas.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>imrs/cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>mapa_06.py</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small><br><code>mapa_07.py</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small><br><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>carregar_malha_municipal()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small><br><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>juntar_dados_territoriais()</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small><br>+8 more</td>
+  <td>Module file in src/imrs/cartografia.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>mapa_06.py</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>desenhar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>Module file in src/imrs/mapa_06.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>mapa_07.py</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>desenhar_mapa()</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td>Module file in src/imrs/mapa_07.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>mapas.py</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>argparse</code><br><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br>+8 more</td>
+  <td>Module file in src/imrs/mapas.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>preparar_mapas.py</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>cartografia.py</code><br><small style="color:var(--muted)">src/regionalizacao/cartografia.py</small><br><code>cartografia.py</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small><br><code>gerar.py</code><br><small style="color:var(--muted)">src/regionalizacao/gerar.py</small><br>+1 more</td>
+  <td><code>codigo_texto()</code><br><small style="color:var(--muted)">src/preparar.py</small><br><code>config.py</code><br><small style="color:var(--muted)">src/config.py</small><br><code>geopandas</code><br>+1 more</td>
+  <td>Module file in src/preparar_mapas.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Validação da Tabela 11 e desenho dos mapas do IMRS.</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Validação da Tabela 11 e desenho dos mapas do IMRS..</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Lê os totais municipais já calculados na planilha do IMRS.</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Lê os totais municipais já calculados na planilha do IMRS..</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Valida os valores municipais em memória e os associa à malha.</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Valida os valores municipais em memória e os associa à malha..</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Desenha as divisas e exporta o PNG com a escala e a legenda do recorte.</code><br><small style="color:var(--muted)">src/imrs/cartografia.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Desenha as divisas e exporta o PNG com a escala e a legenda do recorte..</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Mapa 6 do RIM, programação anual nos municípios do IMRS.</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Mapa 6 do RIM, programação anual nos municípios do IMRS..</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Gera o PNG a partir da malha já associada aos valores municipais.</code><br><small style="color:var(--muted)">src/imrs/mapa_06.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gera o PNG a partir da malha já associada aos valores municipais..</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Mapa 7 do RIM, execução acumulada nos municípios do IMRS.</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Mapa 7 do RIM, execução acumulada nos municípios do IMRS..</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Gera o PNG a partir da malha já associada aos valores municipais.</code><br><small style="color:var(--muted)">src/imrs/mapa_07.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gera o PNG a partir da malha já associada aos valores municipais..</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Coordena a geração dos dois mapas e a execução a partir de um Excel.</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Coordena a geração dos dois mapas e a execução a partir de um Excel..</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Gera ambos os mapas com um único cruzamento municipal.</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Gera ambos os mapas com um único cruzamento municipal..</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Lê a Tabela 11 de um Excel do RIM já gerado.</code><br><small style="color:var(--muted)">src/imrs/mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Lê a Tabela 11 de um Excel do RIM já gerado..</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Prepara as geometrias e os cruzamentos territoriais dos mapas do RIM.</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Prepara as geometrias e os cruzamentos territoriais dos mapas do RIM..</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Carrega os limites projetados dos 853 municípios de Minas Gerais.</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Carrega os limites projetados dos 853 municípios de Minas Gerais..</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Associa dados pela chave territorial e preserva todos os limites da malha.</code><br><small style="color:var(--muted)">src/preparar_mapas.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Associa dados pela chave territorial e preserva todos os limites da malha..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/imrs/cartografia.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/preparar_mapas.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>src/imrs/mapas.py</code></td><td>7 nodes</td></tr>
+<tr><td><code>src/imrs/mapa_06.py</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/imrs/mapa_07.py</code></td><td>4 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x15, calls x13, contains x11, imports x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. Tabela 11Py Imrs ====== -->
+<h2 id="tabela-11py-imrs">6. Tabela 11Py Imrs</h2>
+<p>Tabela 11Py Imrs groups implementation around tabela, 11py, imrs, parcelas, mostly in src/imrs/tabela_11.py. This section covers 6 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Tabela 11Py Imrs (6 nodes, 6 edges)
+    src_imrs_tabela_11_gerar_tabela_11_c44ba5b7("gerar_tabela_11()<br/><small>src/imrs/tabela_11.py</small>")
+    src_imrs_tabela_11_calcular_parcelas_822c9bf8("_calcular_parcelas()<br/><small>src/imrs/tabela_11.py</small>")
+    src_imrs_tabela_11_6b8152a5("tabela_11.py")
+    src_imrs_tabela_11_rationale_13_ce5b010f("Calcula as três parcelas da MUN_juncao_...<br/><small>src/imrs/tabela_11.py</small>")
+    src_imrs_tabela_11_rationale_62_587d40e6("Monta a memória municipal e as linhas d...<br/><small>src/imrs/tabela_11.py</small>")
+    src_imrs_tabela_11_rationale_1_9820bb37("Tabela 11 do RIM — valores por municípi...<br/><small>src/imrs/tabela_11.py</small>")
+    src_imrs_tabela_11_gerar_tabela_11_c44ba5b7 -->|calls| src_imrs_tabela_11_calcular_parcelas_822c9bf8
+    class src_imrs_tabela_11_gerar_tabela_11_c44ba5b7 function;
+    class src_imrs_tabela_11_calcular_parcelas_822c9bf8 function;
+    class src_imrs_tabela_11_6b8152a5 module;
+    class src_imrs_tabela_11_rationale_13_ce5b010f concept;
+    class src_imrs_tabela_11_rationale_62_587d40e6 concept;
+    class src_imrs_tabela_11_rationale_1_9820bb37 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>_calcular_parcelas()</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar_tabela_11()</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><code>pandas</code></td>
+  <td>_calcular_parcelas() node in src/imrs/tabela_11.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>gerar_tabela_11()</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small><br><code>gerar_tabelas_imrs()</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>_calcular_parcelas()</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small><br><code>pandas</code></td>
+  <td>gerar_tabela_11() node in src/imrs/tabela_11.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>tabela_11.py</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>gerar.py</code><br><small style="color:var(--muted)">src/imrs/gerar.py</small></td>
+  <td><code>pandas</code></td>
+  <td>Module file in src/imrs/tabela_11.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Tabela 11 do RIM — valores por município e memória de cálculo. Na referência, a…</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Tabela 11 do RIM — valores por município e memória de cálculo. Na referência, a….</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Calcula as três parcelas da MUN_juncao_plan_exec para uma das bases.</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Calcula as três parcelas da MUN_juncao_plan_exec para uma das bases..</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Monta a memória municipal e as linhas de detalhe da MUN_final.</code><br><small style="color:var(--muted)">src/imrs/tabela_11.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Monta a memória municipal e as linhas de detalhe da MUN_final..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/imrs/tabela_11.py</code></td><td>6 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x3, contains x2, calls x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. Pessoal Seção Despesa ====== -->
+<h2 id="pessoal-se-o-despesa">7. Pessoal Seção Despesa</h2>
+<p>Pessoal Seção Despesa groups implementation around pessoal, seção, despesa, auxílios, mostly in src/pessoal/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Pessoal Seção Despesa (2 nodes, 1 edges)
+    src_pessoal_init_rationale_1_e5400236("Seção de despesa de pessoal e auxílios...<br/><small>src/pessoal/__init__.py</small>")
+    src_pessoal_init_25fd122f("__init__.py")
+    src_pessoal_init_rationale_1_e5400236 -->|explains| src_pessoal_init_25fd122f
+    class src_pessoal_init_rationale_1_e5400236 concept;
+    class src_pessoal_init_25fd122f module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>pessoal/__init__.py</code><br><small style="color:var(--muted)">src/pessoal/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/pessoal/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Seção de despesa de pessoal e auxílios do RIM.</code><br><small style="color:var(--muted)">src/pessoal/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Seção de despesa de pessoal e auxílios do RIM..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/pessoal/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Regionalizacao Seção Regionalização ====== -->
+<h2 id="regionalizacao-se-o-regionaliza-o">8. Regionalizacao Seção Regionalização</h2>
+<p>Regionalizacao Seção Regionalização groups implementation around regionalizacao, seção, regionalização, rim, mostly in src/regionalizacao/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Regionalizacao Seção Regionalização (2 nodes, 1 edges)
+    src_regionalizacao_init_rationale_1_f2eae424("Seção de regionalização do RIM.<br/><small>src/regionalizacao/__init__.py</small>")
+    src_regionalizacao_init_ca4a59a1("__init__.py")
+    src_regionalizacao_init_rationale_1_f2eae424 -->|explains| src_regionalizacao_init_ca4a59a1
+    class src_regionalizacao_init_rationale_1_f2eae424 concept;
+    class src_regionalizacao_init_ca4a59a1 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>regionalizacao/__init__.py</code><br><small style="color:var(--muted)">src/regionalizacao/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/regionalizacao/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Seção de regionalização do RIM.</code><br><small style="color:var(--muted)">src/regionalizacao/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Seção de regionalização do RIM..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/regionalizacao/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Desempenho Seção Consolidado ====== -->
+<h2 id="desempenho-se-o-consolidado">9. Desempenho Seção Consolidado</h2>
+<p>Desempenho Seção Consolidado groups implementation around desempenho, seção, consolidado, rim, mostly in src/desempenho/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Desempenho Seção Consolidado (2 nodes, 1 edges)
+    src_desempenho_init_rationale_1_b63886b3("Seção de desempenho consolidado do RIM.<br/><small>src/desempenho/__init__.py</small>")
+    src_desempenho_init_aaa798f6("__init__.py")
+    src_desempenho_init_rationale_1_b63886b3 -->|explains| src_desempenho_init_aaa798f6
+    class src_desempenho_init_rationale_1_b63886b3 concept;
+    class src_desempenho_init_aaa798f6 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>desempenho/__init__.py</code><br><small style="color:var(--muted)">src/desempenho/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/desempenho/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Seção de desempenho consolidado do RIM.</code><br><small style="color:var(--muted)">src/desempenho/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Seção de desempenho consolidado do RIM..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/desempenho/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Exportacao Formatação Gravação ====== -->
+<h2 id="exportacao-formata-o-grava-o">10. Exportacao Formatação Gravação</h2>
+<p>Exportacao Formatação Gravação groups implementation around exportacao, formatação, gravação, dos, mostly in src/exportacao/__init__.py. This section covers 2 nodes and 1 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Exportacao Formatação Gravação (2 nodes, 1 edges)
+    src_exportacao_init_rationale_1_473efdcc("Formatação e gravação dos arquivos do RIM.<br/><small>src/exportacao/__init__.py</small>")
+    src_exportacao_init_22eaec73("__init__.py")
+    src_exportacao_init_rationale_1_473efdcc -->|explains| src_exportacao_init_22eaec73
+    class src_exportacao_init_rationale_1_473efdcc concept;
+    class src_exportacao_init_22eaec73 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>exportacao/__init__.py</code><br><small style="color:var(--muted)">src/exportacao/__init__.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/exportacao/__init__.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Formatação e gravação dos arquivos do RIM.</code><br><small style="color:var(--muted)">src/exportacao/__init__.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Formatação e gravação dos arquivos do RIM..</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/exportacao/__init__.py</code></td><td>2 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: explains x1. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. Other ====== -->
+<h2 id="other">11. Other</h2>
+<p>Other groups implementation around monitoramento, ppag, pyprojecttoml, mostly in pyproject.toml. This section covers 1 nodes and 0 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (1 nodes, 0 edges)
+    pkg_monitoramento_ppag_d8c666c6("monitoramento-ppag<br/><small>pyproject.toml</small>")
+    class pkg_monitoramento_ppag_d8c666c6 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>monitoramento-ppag</code><br><small style="color:var(--muted)">pyproject.toml</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>monitoramento-ppag node in pyproject.toml.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>pyproject.toml</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: No high-confidence call edges detected. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>262</td></tr>
+      <tr><td>Edges</td><td>615</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>13</td></tr>
+      <tr><td>Documented Sections</td><td>10</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>611</td></tr>
+      <tr><td>INFERRED</td><td>4</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>monitoramento-ppag — Architecture Documentation</p>
+  <p>Generated: 2026-11-23 19:41 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

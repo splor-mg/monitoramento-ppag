@@ -219,14 +219,6 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Malha municipal baixada do IBGE
-/data/auxiliares/MG_Municipios_2025.zip
-
-# Cópias locais das etapas de cálculo do IMRS
-/data/processed/imrs/
-
-# Resultados e memórias reproduzíveis das demais seções do RIM
-/data/processed/desempenho/
-/data/processed/global/
-/data/processed/regionalizacao/
-/outputs/
+# CSVs grandes do SIAFI mantidos apenas localmente
+/dados-siafi-2026-main/data/execucao.csv/execucao.csv
+/dados-siafi-2026-main/data/restos_pagar.csv/restos_pagar.csv

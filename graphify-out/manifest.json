@@ -1,0 +1,304 @@
+{
+  ".vscode/settings.json": {
+    "mtime": 1791319047.069462,
+    "seen": 1795462229.4879577,
+    "ast_hash": "41f5bf2951c9a5673b2435d4a6849a28",
+    "semantic_hash": "41f5bf2951c9a5673b2435d4a6849a28",
+    "ast_empty": true
+  },
+  "dados-siafi-2026-main/datapackage.json": {
+    "mtime": 1795094175.1475134,
+    "seen": 1795462229.4879715,
+    "ast_hash": "3ac4b2f0eee321f893c79e852c4bb822",
+    "semantic_hash": "3ac4b2f0eee321f893c79e852c4bb822",
+    "ast_empty": true
+  },
+  "main.py": {
+    "mtime": 1795118511.6440024,
+    "seen": 1795462229.4879777,
+    "ast_hash": "c087a0a3a2bfc8aadec8cec26d5b26c8",
+    "semantic_hash": "c087a0a3a2bfc8aadec8cec26d5b26c8"
+  },
+  "pyproject.toml": {
+    "mtime": 1794600701.8856413,
+    "seen": 1795462229.4886322,
+    "ast_hash": "ccba1af45457f61c60f93b776495a78e",
+    "semantic_hash": "ccba1af45457f61c60f93b776495a78e"
+  },
+  "src/config.py": {
+    "mtime": 1794926340.9972844,
+    "seen": 1795462229.4891834,
+    "ast_hash": "0997d8ba53520c3670a61bd126f131af",
+    "semantic_hash": "0997d8ba53520c3670a61bd126f131af"
+  },
+  "src/desempenho/__init__.py": {
+    "mtime": 1794925796.1004295,
+    "seen": 1795462229.4895577,
+    "ast_hash": "c664b65e3ea955221c556d2683c079f1",
+    "semantic_hash": "c664b65e3ea955221c556d2683c079f1"
+  },
+  "src/desempenho/gerar.py": {
+    "mtime": 1794937031.6781304,
+    "seen": 1795462229.4899473,
+    "ast_hash": "4d2b30ddc2737e1176366ba8243192a7",
+    "semantic_hash": "4d2b30ddc2737e1176366ba8243192a7"
+  },
+  "src/desempenho/grafico_01.py": {
+    "mtime": 1794936886.3598988,
+    "seen": 1795462229.4903502,
+    "ast_hash": "450fa677d55d52bd0df976ee8d756dd6",
+    "semantic_hash": "450fa677d55d52bd0df976ee8d756dd6"
+  },
+  "src/desempenho/grafico_02.py": {
+    "mtime": 1794937031.6724179,
+    "seen": 1795462229.4907506,
+    "ast_hash": "12899e268f11035961ff02329e429c00",
+    "semantic_hash": "12899e268f11035961ff02329e429c00"
+  },
+  "src/desempenho/preparar_desempenho.py": {
+    "mtime": 1794936886.3433123,
+    "seen": 1795462229.4911656,
+    "ast_hash": "0bfa629581eec6df2b1a507c8b3d5ef0",
+    "semantic_hash": "0bfa629581eec6df2b1a507c8b3d5ef0"
+  },
+  "src/desempenho/tabela_05.py": {
+    "mtime": 1794936886.3443573,
+    "seen": 1795462229.4915547,
+    "ast_hash": "25f386e89a707c18c4f8bf9d13efc466",
+    "semantic_hash": "25f386e89a707c18c4f8bf9d13efc466"
+  },
+  "src/desempenho/tabela_06.py": {
+    "mtime": 1794936886.35353,
+    "seen": 1795462229.4920254,
+    "ast_hash": "24267fa7ecc55f305755f822abdce158",
+    "semantic_hash": "24267fa7ecc55f305755f822abdce158"
+  },
+  "src/execucao_global/__init__.py": {
+    "mtime": 1794946520.1751132,
+    "seen": 1795462229.4924002,
+    "ast_hash": "58f626deffd0ca95d596f88848ef1b19",
+    "semantic_hash": "58f626deffd0ca95d596f88848ef1b19"
+  },
+  "src/execucao_global/calculos.py": {
+    "mtime": 1794946520.1876967,
+    "seen": 1795462229.4928005,
+    "ast_hash": "47ef3e1471b94c05e982e55ea1cc979f",
+    "semantic_hash": "47ef3e1471b94c05e982e55ea1cc979f"
+  },
+  "src/execucao_global/gerar.py": {
+    "mtime": 1794946520.2153695,
+    "seen": 1795462229.4931967,
+    "ast_hash": "de7440fa3975d959d227c193bdd03e15",
+    "semantic_hash": "de7440fa3975d959d227c193bdd03e15"
+  },
+  "src/execucao_global/preparar_global.py": {
+    "mtime": 1794946520.1821172,
+    "seen": 1795462229.493553,
+    "ast_hash": "6d0b53deb61494710173ab7789dee666",
+    "semantic_hash": "6d0b53deb61494710173ab7789dee666"
+  },
+  "src/execucao_global/tabela_01.py": {
+    "mtime": 1794946520.193534,
+    "seen": 1795462229.49393,
+    "ast_hash": "2ead2a3cc09a17c7411e0f510d5ceb1d",
+    "semantic_hash": "2ead2a3cc09a17c7411e0f510d5ceb1d"
+  },
+  "src/execucao_global/tabela_02.py": {
+    "mtime": 1794946520.1991146,
+    "seen": 1795462229.4943063,
+    "ast_hash": "6ca13e02094dbeeb71fff499e9d46e94",
+    "semantic_hash": "6ca13e02094dbeeb71fff499e9d46e94"
+  },
+  "src/execucao_global/tabela_03.py": {
+    "mtime": 1794946520.2044487,
+    "seen": 1795462229.4989636,
+    "ast_hash": "f1dbfa7b846c787c24c48768b5f60111",
+    "semantic_hash": "f1dbfa7b846c787c24c48768b5f60111"
+  },
+  "src/execucao_global/tabela_04.py": {
+    "mtime": 1794946520.2098234,
+    "seen": 1795462229.4993393,
+    "ast_hash": "544e759816db85661d9e931274bbe41e",
+    "semantic_hash": "544e759816db85661d9e931274bbe41e"
+  },
+  "src/exportacao/__init__.py": {
+    "mtime": 1794925795.8272076,
+    "seen": 1795462229.499748,
+    "ast_hash": "49719e9e2317d284223de9a028209058",
+    "semantic_hash": "49719e9e2317d284223de9a028209058"
+  },
+  "src/exportacao/estilo.py": {
+    "mtime": 1794925795.7076578,
+    "seen": 1795462229.5001175,
+    "ast_hash": "7245e697a4adc4a4a5113b5c0e0286d5",
+    "semantic_hash": "7245e697a4adc4a4a5113b5c0e0286d5"
+  },
+  "src/exportacao/excel.py": {
+    "mtime": 1794925795.764882,
+    "seen": 1795462229.5005019,
+    "ast_hash": "368f0c7da1ee4518934145daa4e078cc",
+    "semantic_hash": "368f0c7da1ee4518934145daa4e078cc"
+  },
+  "src/exportacao/word.py": {
+    "mtime": 1794925795.775884,
+    "seen": 1795462229.5009441,
+    "ast_hash": "6d58672341e8a726caf7eace0bc27d94",
+    "semantic_hash": "6d58672341e8a726caf7eace0bc27d94"
+  },
+  "src/imrs/__init__.py": {
+    "mtime": 1794926375.1027427,
+    "seen": 1795462229.5013611,
+    "ast_hash": "20f74f6a1df992e2f0a3adc517f57ea8",
+    "semantic_hash": "20f74f6a1df992e2f0a3adc517f57ea8"
+  },
+  "src/imrs/cartografia.py": {
+    "mtime": 1794926341.0110502,
+    "seen": 1795462229.5017576,
+    "ast_hash": "9bd6608251582182fe0c2330f485e767",
+    "semantic_hash": "9bd6608251582182fe0c2330f485e767"
+  },
+  "src/imrs/gerar.py": {
+    "mtime": 1794925923.7531269,
+    "seen": 1795462229.5021532,
+    "ast_hash": "ecca6fe7df44fc652ba99d83e0d75ff1",
+    "semantic_hash": "ecca6fe7df44fc652ba99d83e0d75ff1"
+  },
+  "src/imrs/mapa_06.py": {
+    "mtime": 1794925796.0212114,
+    "seen": 1795462229.5025704,
+    "ast_hash": "9bc7b7cb116e8c75dad251adc6bc19cb",
+    "semantic_hash": "9bc7b7cb116e8c75dad251adc6bc19cb"
+  },
+  "src/imrs/mapa_07.py": {
+    "mtime": 1794925796.0437443,
+    "seen": 1795462229.502955,
+    "ast_hash": "aa53f2556228d1dcdeabba6ccfbd0a0b",
+    "semantic_hash": "aa53f2556228d1dcdeabba6ccfbd0a0b"
+  },
+  "src/imrs/mapas.py": {
+    "mtime": 1794926375.1077383,
+    "seen": 1795462229.5033479,
+    "ast_hash": "acec6439b92dc1853c079b809520b434",
+    "semantic_hash": "acec6439b92dc1853c079b809520b434"
+  },
+  "src/imrs/preparar_imrs.py": {
+    "mtime": 1795118511.6510334,
+    "seen": 1795462229.5037453,
+    "ast_hash": "00d42e319083c35ec7da7fa03c83c6b1",
+    "semantic_hash": "00d42e319083c35ec7da7fa03c83c6b1"
+  },
+  "src/imrs/tabela_09.py": {
+    "mtime": 1794925795.5968177,
+    "seen": 1795462229.5041113,
+    "ast_hash": "a6b704a8279ee1af0cad86fb284e769e",
+    "semantic_hash": "a6b704a8279ee1af0cad86fb284e769e"
+  },
+  "src/imrs/tabela_10.py": {
+    "mtime": 1794925845.6303718,
+    "seen": 1795462229.5044992,
+    "ast_hash": "e9589354b687579c1085ec9d097cdc64",
+    "semantic_hash": "e9589354b687579c1085ec9d097cdc64"
+  },
+  "src/imrs/tabela_11.py": {
+    "mtime": 1794925795.6630206,
+    "seen": 1795462229.5048978,
+    "ast_hash": "58f5a37fce809bec6c2564a37713c022",
+    "semantic_hash": "58f5a37fce809bec6c2564a37713c022"
+  },
+  "src/imrs/texto.py": {
+    "mtime": 1794925795.836731,
+    "seen": 1795462229.5052598,
+    "ast_hash": "784ec9c62276b6e7054a866adf408802",
+    "semantic_hash": "784ec9c62276b6e7054a866adf408802"
+  },
+  "src/pessoal/__init__.py": {
+    "mtime": 1794925796.2472847,
+    "seen": 1795462229.5056338,
+    "ast_hash": "21de6cc52320d575b1c2c844287a4ae8",
+    "semantic_hash": "21de6cc52320d575b1c2c844287a4ae8"
+  },
+  "src/preparar.py": {
+    "mtime": 1794925923.414984,
+    "seen": 1795462229.5060115,
+    "ast_hash": "7e55a23f8c3738ef916e829a458e3043",
+    "semantic_hash": "7e55a23f8c3738ef916e829a458e3043"
+  },
+  "src/preparar_dados.py": {
+    "mtime": 1794925796.0843873,
+    "seen": 1795462229.5063958,
+    "ast_hash": "a34ae317d6db22cbead02d2158e0340e",
+    "semantic_hash": "a34ae317d6db22cbead02d2158e0340e"
+  },
+  "src/preparar_mapas.py": {
+    "mtime": 1794926340.989221,
+    "seen": 1795462229.5067718,
+    "ast_hash": "5628f6ca05d06c54819a5ae0b0480601",
+    "semantic_hash": "5628f6ca05d06c54819a5ae0b0480601"
+  },
+  "src/regionalizacao/__init__.py": {
+    "mtime": 1794925796.186233,
+    "seen": 1795462229.507133,
+    "ast_hash": "76880f14daa5e903da9e86ebc2249070",
+    "semantic_hash": "76880f14daa5e903da9e86ebc2249070"
+  },
+  "src/regionalizacao/cartografia.py": {
+    "mtime": 1794946802.0753973,
+    "seen": 1795462229.507494,
+    "ast_hash": "c02350e4a9c5dc0c7a3d0222ffb50c44",
+    "semantic_hash": "c02350e4a9c5dc0c7a3d0222ffb50c44"
+  },
+  "src/regionalizacao/gerar.py": {
+    "mtime": 1795117486.6454954,
+    "seen": 1795462229.5078743,
+    "ast_hash": "0ee95259fd8c3dd14940f7bd99aaddcc",
+    "semantic_hash": "0ee95259fd8c3dd14940f7bd99aaddcc"
+  },
+  "src/regionalizacao/mapa_01.py": {
+    "mtime": 1794946802.079396,
+    "seen": 1795462229.5082595,
+    "ast_hash": "376d72966143e9d0bd13d6d7be2236ef",
+    "semantic_hash": "376d72966143e9d0bd13d6d7be2236ef"
+  },
+  "src/regionalizacao/mapa_02.py": {
+    "mtime": 1794946802.0844398,
+    "seen": 1795462229.5086522,
+    "ast_hash": "707a9397bf73231f8eaf3347f8195481",
+    "semantic_hash": "707a9397bf73231f8eaf3347f8195481"
+  },
+  "src/regionalizacao/mapa_03.py": {
+    "mtime": 1794946802.0886602,
+    "seen": 1795462229.5090268,
+    "ast_hash": "3174357b940df777024a9652e4af84e6",
+    "semantic_hash": "3174357b940df777024a9652e4af84e6"
+  },
+  "src/regionalizacao/mapa_04.py": {
+    "mtime": 1794946802.0939028,
+    "seen": 1795462229.509393,
+    "ast_hash": "153baac636c500c58df5075bf9eb0809",
+    "semantic_hash": "153baac636c500c58df5075bf9eb0809"
+  },
+  "src/regionalizacao/mapa_05.py": {
+    "mtime": 1794946802.0984545,
+    "seen": 1795462229.5097713,
+    "ast_hash": "ea8c401f2f98b687d7d323328e61667e",
+    "semantic_hash": "ea8c401f2f98b687d7d323328e61667e"
+  },
+  "src/regionalizacao/preparar_regionalizacao.py": {
+    "mtime": 1795117486.6398668,
+    "seen": 1795462229.5101485,
+    "ast_hash": "0947ffe1697f4504a7889868bdd0728f",
+    "semantic_hash": "0947ffe1697f4504a7889868bdd0728f"
+  },
+  "src/regionalizacao/tabela_07.py": {
+    "mtime": 1794946802.06513,
+    "seen": 1795462229.5106812,
+    "ast_hash": "1d270b9727ce1a2961dfabb33832caa2",
+    "semantic_hash": "1d270b9727ce1a2961dfabb33832caa2"
+  },
+  "src/regionalizacao/tabela_08.py": {
+    "mtime": 1794946802.0691617,
+    "seen": 1795462229.5110765,
+    "ast_hash": "f80be2c61b2352b06023fce8c484357f",
+    "semantic_hash": "f80be2c61b2352b06023fce8c484357f"
+  }
+}
